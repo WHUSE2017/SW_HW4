@@ -33,30 +33,90 @@
  
   1. 博主小周
 
-    |场景一|博主小周|
-    ---|---
-    姓名 | 小周
-    性别|男
-    职业|武汉大学研究生在读
-    知识层次和能力|研究生，有一定计算机知识储备
-    动机、目的、困难|动机、目的：记录碎片知识和心情，在项目中提高编程能力，搭建一个符合自己审美和功能的个性化专业博客
-    用户偏好|扁平化设计风格，个性化功能
-    用户比例|相当于占50%
-    典型场景|登录博客，编辑博文选择相应的tag发布；在搜索框输入关键字搜索；修改或删除曾经的博文，也可修改博客风格以及相应功能；可以增加、删除、查看、修改代办事项和ToDoList分类，随时查看校内网通知。
-    典型描述|我用我喜欢
+<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
+		<col class="col0">
+		<col class="col1">
+		<tbody>
+		  <tr class="row0">
+			<td class="column0 style1 s">姓名 </td>
+			<td class="column1 style1 s">小周</td>
+		  </tr>
+		  <tr class="row1">
+			<td class="column0 style1 s">性别</td>
+			<td class="column1 style1 s">男</td>
+		  </tr>
+		  <tr class="row2">
+			<td class="column0 style1 s">职业</td>
+			<td class="column1 style1 s">武汉大学研究生在读</td>
+		  </tr>
+		  <tr class="row3">
+			<td class="column0 style1 s">知识层次和能力</td>
+			<td class="column1 style1 s">研究生，有一定计算机知识储备</td>
+		  </tr>
+		  <tr class="row4">
+			<td class="column0 style1 s">动机、目的、困难</td>
+			<td class="column1 style1 s">动机、目的：记录碎片知识和心情，在项目中提高编程能力，搭建一个符合自己审美和功能的个性化专业博客</td>
+		  </tr>
+		  <tr class="row5">
+			<td class="column0 style1 s">用户偏好</td>
+			<td class="column1 style1 s">扁平化设计风格，个性化功能</td>
+		  </tr>
+		  <tr class="row6">
+			<td class="column0 style1 s">用户比例</td>
+			<td class="column1 style1 s">相当于占50%</td>
+		  </tr>
+		  <tr class="row7">
+			<td class="column0 style1 s">典型场景</td>
+			<td class="column1 style1 s">登录博客，编辑博文选择相应的tag发布；在搜索框输入关键字搜索；修改或删除曾经的博文，也可修改博客风格以及相应功能；可以增加、删除、查看、修改代办事项和ToDoList分类，随时查看校内网通知。</td>
+		  </tr>
+		  <tr class="row8">
+			<td class="column0 style1 s">典型描述</td>
+			<td class="column1 style1 s">我用我喜欢</td>
+		  </tr>
+		</tbody>
+	</table>
 
   2.普通游客小李
     
-     场景二|普通游客
-     ---|---
-     姓名|小李
-     性别|男
-     职业|学生
-     知识层次和能力|大学，从小使用使用电脑
-     动机、目的、困难|动机、目的：浏览网页，发现好玩的新鲜事，学习他人的知识。困难：网上无用的知识太多，不容易找到好资源
-     用户偏好|有风格、有深度的干货
-     用户比例|50%
-     典型场景|这个博客真棒，我喜欢
+<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
+		<col class="col0">
+		<col class="col1">
+		<tbody>
+		  <tr class="row0">
+			<td class="column0 style1 s">&nbsp;姓名</td>
+			<td class="column1 style2 s">小李</td>
+		  </tr>
+		  <tr class="row1">
+			<td class="column0 style1 s">&nbsp;性别</td>
+			<td class="column1 style2 s">男</td>
+		  </tr>
+		  <tr class="row2">
+			<td class="column0 style1 s">&nbsp;职业</td>
+			<td class="column1 style2 s">学生</td>
+		  </tr>
+		  <tr class="row3">
+			<td class="column0 style1 s">&nbsp;知识层次和能力</td>
+			<td class="column1 style2 s">大学，从小使用使用电脑</td>
+		  </tr>
+		  <tr class="row4">
+			<td class="column0 style1 s">&nbsp;动机、目的、困难</td>
+			<td class="column1 style2 s">动机、目的：浏览网页，发现好玩的新鲜事，学习他人的知识。困难：网上无用的知识太多，不容易找到好资源</td>
+		  </tr>
+		  <tr class="row5">
+			<td class="column0 style1 s">&nbsp;用户偏好</td>
+			<td class="column1 style2 s">有风格、有深度的干货</td>
+		  </tr>
+		  <tr class="row6">
+			<td class="column0 style1 s">&nbsp;用户比例</td>
+			<td class="column1 style3 n">50%</td>
+		  </tr>
+		  <tr class="row7">
+			<td class="column0 style4 s">&nbsp;典型场景</td>
+			<td class="column1 style2 s">这个博客真棒，我喜欢</td>
+		  </tr>
+		</tbody>
+	</table>
+    
     
   #### 2.4 典型用户需求说明
   1. 博主：能够添加博文、登录、搜索、管理博客、可以增加待办事项、可以接收消息、可以与留言进行互动
