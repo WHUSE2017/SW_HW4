@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
 	<col class="col0">
 	<col class="col1">
@@ -22,8 +21,6 @@
 	</tbody>
 </table>
 
-=======
->>>>>>> 55d811cd3c38ec49e7a3704b5b8a850f8b28d3d7
 ## 目录
 * <a href="#Intro">1.引言</a>
     * <a href="#purpose">1.1 编写目的</a>
@@ -153,6 +150,50 @@
 		</tbody>
 	</table>
 	3. 认证用户小王
+<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
+        <col class="col0">
+        <col class="col1">
+        <tbody>
+          <tr class="row0">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;姓名 </td>
+            <td class="column1 style2 s">小王</td>
+          </tr>
+          <tr class="row1">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;性别</td>
+            <td class="column1 style2 s">男</td>
+          </tr>
+          <tr class="row2">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;职业</td>
+            <td class="column1 style2 s">武汉大学研究生在读</td>
+          </tr>
+          <tr class="row3">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;知识层次和能力</td>
+            <td class="column1 style2 s">有一定的计算机知识储备</td>
+          </tr>
+          <tr class="row4">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;动机、目的、困难</td>
+            <td class="column1 style2 s">动机、目的：在网上寻找有意思的内容，能够随时随地看到最新资讯</td>
+          </tr>
+          <tr class="row5">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;用户偏好</td>
+            <td class="column1 style2 s">功能齐全，操作简洁，资讯丰富</td>
+          </tr>
+          <tr class="row6">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;用户比例</td>
+            <td class="column1 style2 s">占20%</td>
+          </tr>
+          <tr class="row7">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;典型场景</td>
+            <td class="column1 style2 s">认证前浏览相关博文，留言；认证后查看武大官网最新资讯</td>
+          </tr>
+          <tr class="row8">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;典型描述</td>
+            <td class="column1 style2 s">比普通游客多一个特权，有意思</td>
+          </tr>
+       </tbody>
+</table>
+
+	
 
     
   #### <a name="user_require" id="user_require">2.4 典型用户需求说明</a>
@@ -211,6 +252,12 @@ ToDoList页面
 
 设置页面
 ![设置页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E8%AE%BE%E7%BD%AE%E9%A1%B5%E9%9D%A2.png?raw=true)
+
+认证页面
+![认证页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86.png)
+
+用户管理页面
+![用户管理页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/用户管理.png)
 
 ### <a name="standard" id="standard">5.系统功能描述验收标准</a>
 #### <a name="function_rule" id="function_rule">5.1对功能的规定</a>
@@ -593,47 +640,4 @@ ToDoList页面
         </tbody>
     </table>
     
-<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
-        <col class="col0">
-        <col class="col1">
-        <tbody>
-          <tr class="row0">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;姓名 </td>
-            <td class="column1 style2 s">小王</td>
-          </tr>
-          <tr class="row1">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;性别</td>
-            <td class="column1 style2 s">男</td>
-          </tr>
-          <tr class="row2">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;职业</td>
-            <td class="column1 style2 s">武汉大学研究生在读</td>
-          </tr>
-          <tr class="row3">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;知识层次和能力</td>
-            <td class="column1 style2 s">有一定的计算机知识储备</td>
-          </tr>
-          <tr class="row4">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;动机、目的、困难</td>
-            <td class="column1 style2 s">动机、目的：在网上寻找有意思的内容，能够随时随地看到最新资讯</td>
-          </tr>
-          <tr class="row5">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;用户偏好</td>
-            <td class="column1 style2 s">功能齐全，操作简洁，资讯丰富</td>
-          </tr>
-          <tr class="row6">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;用户比例</td>
-            <td class="column1 style2 s">占20%</td>
-          </tr>
-          <tr class="row7">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;典型场景</td>
-            <td class="column1 style2 s">认证前浏览相关博文，留言；认证后查看武大官网最新资讯</td>
-          </tr>
-          <tr class="row8">
-            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;典型描述</td>
-            <td class="column1 style2 s">比普通游客多一个特权，有意思</td>
-          </tr>
-       </tbody>
-    </table>
-=======
->>>>>>> 55d811cd3c38ec49e7a3704b5b8a850f8b28d3d7
+
