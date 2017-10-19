@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
 	<col class="col0">
 	<col class="col1">
@@ -21,6 +22,8 @@
 	</tbody>
 </table>
 
+=======
+>>>>>>> 55d811cd3c38ec49e7a3704b5b8a850f8b28d3d7
 ## 目录
 * <a href="#Intro">1.引言</a>
     * <a href="#purpose">1.1 编写目的</a>
@@ -542,6 +545,7 @@ ToDoList页面
 		  </tr>
 		</tbody>
 	</table>
+<<<<<<< HEAD
 	
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
         <col class="col0">
@@ -631,3 +635,5 @@ ToDoList页面
           </tr>
        </tbody>
     </table>
+=======
+>>>>>>> 55d811cd3c38ec49e7a3704b5b8a850f8b28d3d7
