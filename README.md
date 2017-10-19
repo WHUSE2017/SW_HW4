@@ -254,10 +254,10 @@ ToDoList页面
 ![设置页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E8%AE%BE%E7%BD%AE%E9%A1%B5%E9%9D%A2.png?raw=true)
 
 认证页面
-![认证页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86.png)
+![认证页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E8%AE%A4%E8%AF%81%E9%A1%B5%E9%9D%A2.png?raw=true)
 
 用户管理页面
-![用户管理页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/用户管理.png)
+![用户管理页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E7%94%A8%E6%88%B7%E7%AE%A1%E7%90%86.png?raw=true)
 
 ### <a name="standard" id="standard">5.系统功能描述验收标准</a>
 #### <a name="function_rule" id="function_rule">5.1对功能的规定</a>
