@@ -1,44 +1,68 @@
-# SW_HW4
+<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
+	<col class="col0">
+	<col class="col1">
+	<tbody>
+	  <tr class="row0">
+		<td class="column0 style1 s">版本号</td>
+		<td class="column1 style1 s">修改说明</td>
+	  </tr>
+	  <tr class="row1">
+		<td class="column0 style1 s">v1.0</td>
+		<td class="column1 style1 s">完成文档初稿，确定撰写文档目的，对项目有一个基本定位</td>
+	  </tr>
+	  <tr class="row2">
+		<td class="column0 style1 s">v1.1</td>
+		<td class="column1 style1 s">修改目录</td>
+	  </tr>
+	  <tr class="row3">
+		<td class="column0 style1 s">v2.0</td>
+		<td class="column1 style1 s">添加第三类用户功能，修改文档相关内容</td>
+	  </tr>
+	</tbody>
+</table>
+
 ## 目录
-* [1. 引言](###1)
-    * [1.1 编写目的](####1.1)
-    * [1.2 项目简介](####1.2)
-    * [1.3 参考资料](####1.3)
-* [2. 总体描述](###2)
-    * [2.1 项目背景](####2.1)
-    * [2.2 项目目标](####2.2)
-    * [2.3 典型用户场景](####2.3)
-    * [2.4 典型用户需求说明](####2.4)
-    * [2.5 运行环境要求](####2.5)
-* [3. 前提与假设](###3)
-* [4. 页面原型设计](###4)
-* [5. 系统功能描述验收标准](###5)
-    * [5.1 对功能的规定](####5.1)
-### 1. 引言
-#### 1.1 编写目的
+* <a href="#Intro">1.引言</a>
+    * <a href="#purpose">1.1 编写目的</a>
+    * <a href="#brief_intro">1.2 项目简介</a>
+    * <a href="#refer">1.3 参考资料</a>
+* <a href="#total_intro">2.总体描述</a>
+    * <a href="#background">2.1 项目背景</a>
+    * <a href="#purpose1">2.2 项目目标</a>
+    * <a href="#user_case">2.3 典型用户场景</a>
+    * <a href="#user_require">2.4 典型用户需求说明</a>
+    * <a href="#env">2.5 运行环境要求</a>
+* <a href="#pre_assu">3. 前提与假设</a>
+* <a href="#page">4. 页面原型设计</a>
+* <a href="#standard">5. 系统功能描述验收标准</a>
+    * <a href="function_rule">5.1 对功能的规定</a>
+    
+### <a name="Intro" id="Intro">1. 引言</a>
+#### <a name="purpose" id="purpose">1.1 编写目的</a>
 此需求规格说明书编制目的是明确本项目的详细需求，确认项目的功能和性能，和用户形成一致的理解和确认，作为进一步详细设计软件的基础。本文档仅供本项目全体成员，包括项目经理、设计人员、开发人员参考。
 本项目作为高级软件工程的第四次课程，小组成员为王枫（031）、黄金筱（107）、周明浩（255）、刘烨（277），主要实现个人博客的搭建。初步决定使用python语言，flask框架。
 
-#### 1.2 项目简介
+#### <a name="brief_intro" id="brief_intro">1.2 项目简介</a>
 - 项目名称： 未命名的博客（个人博客）
 - 项目面向用户：个人博主
 - 项目开发者：武汉大学软工实践 121ComeOn 小组
 
-#### 1.3 参考资料
+#### <a name="refer" id="refer">1.3 参考资料</a>
 - flask 开发文档
 - 《构建之法》(第二版)，邹欣。
 
-### 2. 总体描述
-  #### 2.1 项目背景
+### <a name="total_intro" id="total_intro">2. 总体描述</a>
+  #### <a name="background" id="background">2.1 项目背景</a>
   通过前期调研，我们发现现代社会人们接触到的知识都是碎片化且散乱的知识，大家希望有一个可以把自己每天激发的想法、感受、学到的碎片知识或者想收藏供以后回顾的东西整理、记录下来，通过这种方式来记录生活，分享知识，交流经验。    
   而目前的博客网站不够个性化，相似的界面和复杂的操作促使我们希望设计开发出一个属于自己的博客，它符合我们的审美，有个性化功能，并且可以自主地添加自己其他功能，使每天的记录不再流于形式；开发此博客可以锻炼小组成员的代码能力，提高团队合作意识，从而完成一个更加自由、更加个性、更加专业的博客项目。
   #### 2.2 项目目标
   完成个人博客的基本功能，主要包括登录、搜索、发布博文、管理、讨论，以及根据需求分析添加的个性化功能，包括ToDoList、消息通知。对于游客来说，可以进行搜索、浏览、留言、分享等功能。
   
-  #### 2.3 典型用户场景     
+  #### <a name="user_case" id="user_case">2.3 典型用户场景</a>
 #####   我们的系统主要面向两类用户：      
   - 本系统的拥有者（博主）
   - 普通游客
+  - 已认证游客
  
   1. 博主小周
 
@@ -125,14 +149,16 @@
 		  </tr>
 		</tbody>
 	</table>
+	3. 认证用户小王
+
     
-    
-  #### 2.4 典型用户需求说明
+  #### <a name="user_require" id="user_require">2.4 典型用户需求说明</a>
   1. 博主：能够添加博文、登录、搜索、管理博客、可以增加待办事项、可以接收消息、可以与留言进行互动
   2. 小李：能够搜索、浏览博客，与博主互动留言
+  3. 小王：介于博主和普通游客之间，既可以作为普通游客使用基本功能，又可以拥有查看最新咨询的权限
  
-  #### 2.5 运行环境要求
-##### 1.服务器
+  #### <a name="env" id="env">2.5 运行环境要求</a>
+##### <a name="" id="">1.服务器</a>
 ##### 平台
 依托于 Python 的开源，本项目可以在各种系统中（Windows、Linux、IOS、Android）运行。
 
@@ -144,15 +170,15 @@
 通过 AJAX 技术，加之采用 GZIP 压缩传输数据，通信的数据量极其小，除去图片，用户每次的 page view 不足 5K。
 假设用户的页面停留时间为3分钟，图片全部使用外部链接，那么 1M 带宽足够承载 5000 位用户同时访问。
 
-##### 2.浏览器
+##### <a name="" id="">2.浏览器</a>
 通过使用 HTML5 提供的 API，以及 CSS3 提供的新样式，可支持所有现代浏览器
 
 | 浏览器   | Chrome | Edge | Firefox | Internet Explorer | Opera | Safari |
 | -------- | ------ | ---- | ------- | ----------------- | ----- | ------ |
 | 最低版本 | 5      | All  | 4.0     | 10                | 11.50 | 5.0    |
 
-### 3.前提与假设
-##### 前提    
+### <a name="pre_assu" id="pre_assu">3.前提与假设</a>
+##### <a name="" id="">前提</a>       
 1. 技术前提：小组成员都熟悉python语言，有一定的编程经验。
 2. 人员前提：小组主要成员基本不会出现变动，并且在项目开发过程中不会因为突发情况的发生而导致项目成员无法正常参与开发工作。
 ##### 假设
@@ -161,7 +187,7 @@
 3. 时间限定：假定项目的截止时间不会提前。    
 4. 需求限定：假定项目需求基本确定之后，不会有太大改变。
 
-### 4.界面原型设计
+### <a name="page" id="page">4.界面原型设计</a>
 HomePage页面
 ![HomePage页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/homepage%E9%A1%B5%E9%9D%A2.png?raw=true)
 
@@ -183,9 +209,9 @@ ToDoList页面
 设置页面
 ![设置页面](https://github.com/WHUSE2017/SW_HW4/blob/master/Images_Interface/%E8%AE%BE%E7%BD%AE%E9%A1%B5%E9%9D%A2.png?raw=true)
 
-### 5.系统功能描述验收标准
-#### 5.1对功能的规定
-###### 首页功能
+### <a name="standard" id="standard">5.系统功能描述验收标准</a>
+#### <a name="function_rule" id="function_rule">5.1对功能的规定</a>
+###### <a name="" id="">首页功能</a>
 <table>
     <tr>
         <td><b>测试功能</b></td> 
@@ -272,7 +298,7 @@ ToDoList页面
     </tr>
 </table>
 
-###### 发布博客功能
+###### <a name="" id="">发布博客功能</a>
 <table>
     <tr>
         <td><b>测试功能</b></td> 
@@ -331,7 +357,7 @@ ToDoList页面
     </tr>
 </table>
 
-###### 博文页功能
+###### <a name="" id="">博文页功能</a>
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
 		<col class="col0">
 		<col class="col1">
@@ -390,7 +416,7 @@ ToDoList页面
 		</tbody>
 	</table>
 	
-###### ToDoList页面
+###### <a name="" id="">ToDoList页面</a>
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
 		<col class="col0">
 		<col class="col1">
@@ -437,7 +463,7 @@ ToDoList页面
 		</tbody>
 	</table>
 	
-###### 设置功能
+###### <a name="" id="">设置功能</a>
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
 		<col class="col0">
 		<col class="col1">
@@ -482,7 +508,7 @@ ToDoList页面
 		  </tr>
 	</table>
 	
-###### 消息页面
+###### <a name="" id="">消息页面</a>
 <table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
 		<col class="col0">
 		<col class="col1">
@@ -516,4 +542,92 @@ ToDoList页面
 		  </tr>
 		</tbody>
 	</table>
-
+	
+<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
+        <col class="col0">
+        <col class="col1">
+        <col class="col2">
+        <col class="col3">
+        <col class="col4">
+        <col class="col5">
+        <tbody>
+          <tr class="row0">
+            <td class="column0 style4 s">测试功能</td>
+            <td class="column1 style4 s">测试项</td>
+            <td class="column2 style4 s">输入/操作</td>
+            <td class="column3 style4 s">检验点</td>
+            <td class="column4 style4 s">测试功能</td>
+            <td class="column5 style4 s">完成情况</td>
+          </tr>
+          <tr class="row1">
+            <td class="column0 style1 s style3" rowspan="4">认证功能</td>
+            <td class="column1 style5 s">静态页面</td>
+            <td class="column2 style5 null"></td>
+            <td class="column3 style6 s">页面布局</td>
+            <td class="column4 style7 s">由上到下分别为姓名、学校、备注</td>
+            <td class="column5 style5 null"></td>
+          </tr>
+          <tr class="row2">
+            <td class="column1 style8 s style10" rowspan="3">动态功能</td>
+            <td class="column2 style6 s">未输入姓名</td>
+            <td class="column3 style6 s">确认功能、判断非法输入</td>
+            <td class="column4 style7 s">提示非法输入</td>
+            <td class="column5 style5 null"></td>
+          </tr>
+          <tr class="row3">
+            <td class="column2 style6 s">未输入学校</td>
+            <td class="column3 style6 s">确认功能、判断非法输入</td>
+            <td class="column4 style7 s">提示非法输入</td>
+            <td class="column5 style5 null"></td>
+          </tr>
+          <tr class="row4">
+            <td class="column2 style6 s">点击提交</td>
+            <td class="column3 style6 s">确认功能、结果显示</td>
+            <td class="column4 style7 s">已认证跳转消息页面，未认证显示提交成功</td>
+            <td class="column5 style5 null"></td>
+          </tr>
+        </tbody>
+    </table>
+    
+<table border="0" cellpadding="0" cellspacing="0" id="sheet0" class="sheet0 gridlines">
+        <col class="col0">
+        <col class="col1">
+        <tbody>
+          <tr class="row0">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;姓名 </td>
+            <td class="column1 style2 s">小王</td>
+          </tr>
+          <tr class="row1">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;性别</td>
+            <td class="column1 style2 s">男</td>
+          </tr>
+          <tr class="row2">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;职业</td>
+            <td class="column1 style2 s">武汉大学研究生在读</td>
+          </tr>
+          <tr class="row3">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;知识层次和能力</td>
+            <td class="column1 style2 s">有一定的计算机知识储备</td>
+          </tr>
+          <tr class="row4">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;动机、目的、困难</td>
+            <td class="column1 style2 s">动机、目的：在网上寻找有意思的内容，能够随时随地看到最新资讯</td>
+          </tr>
+          <tr class="row5">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;用户偏好</td>
+            <td class="column1 style2 s">功能齐全，操作简洁，资讯丰富</td>
+          </tr>
+          <tr class="row6">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;用户比例</td>
+            <td class="column1 style2 s">占20%</td>
+          </tr>
+          <tr class="row7">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;典型场景</td>
+            <td class="column1 style2 s">认证前浏览相关博文，留言；认证后查看武大官网最新资讯</td>
+          </tr>
+          <tr class="row8">
+            <td class="column0 style1 s">&nbsp;&nbsp;&nbsp;&nbsp;典型描述</td>
+            <td class="column1 style2 s">比普通游客多一个特权，有意思</td>
+          </tr>
+       </tbody>
+    </table>
