@@ -271,6 +271,54 @@ footer p {
     color: #FFFFFF;
 }
 
+/* ---------- 加载动画 ---------- */
+#loader {
+    opacity: 0;
+}
+
+#loader1, #loader2, #loader3, #loader4 {
+    position: fixed;
+    top: 100%;
+    left: calc(50% - 3.5em);
+    border: .5rem solid;
+    border-radius: 999rem;
+    animation: loading 2s infinite;
+}
+
+#loader1 {
+    border-color: #d62d20;
+}
+
+#loader2 {
+    border-color: #0057e7;
+    margin-left: 2rem;
+    animation-delay: .2s;
+}
+
+#loader3 {
+    border-color: #008744;
+    margin-left: 4rem;
+    animation-delay: .3s;
+}
+
+#loader4 {
+    border-color: #ffa700;
+    margin-left: 6rem;
+    animation-delay: .4s;
+}
+
+@keyframes loading {
+    10% {
+        margin-top: .5em;
+    }
+    30% {
+        margin-top: -.5em;
+    }
+    60% {
+        margin-top: 0;
+    }
+}
+
 /* ---------- 响应式 ---------- */
 /* 1920px */
 @media (min-width: 120rem) {

@@ -1,7 +1,7 @@
 'use strict';
 
 /**
- * 一个简单的 JavaScript 库
+ * 自己写一个简单的 JavaScript 库
  */
 var $ = (function () {
 
@@ -274,5 +274,136 @@ var $ = (function () {
             Element.prototype[domFn] = domFns[domFn];
 
     return $;
+
+})();
+
+$('#css-debug').addEventListener('click', $.cssDebug);
+$('#ajax-debug').addEventListener('click', function () {
+    $.ajax.get({url: '/ajax'});
+});
+
+/**
+ * ajax 加载动画
+ */
+(function () {
+
+    var __dom;
+    // 现存的数量
+    var __number = 0;
+
+    /**
+     * 创建 dom
+     */
+    var __createDom = function () {
+        var __dom = $.createElement('section', {id: 'loader'});
+        for (var i = 1; i < 5; i++) __dom.appendChild($.createElement('section', {id: 'loader' + i}));
+        return __dom
+    };
+
+    /**
+     * 打开一个
+     */
+    var __show = function () {
+        if (__number++ === 0) {
+            document.body.appendChild((__dom = __createDom()).delayCss({opacity: 1}));
+            for (var i = 0; i < 4; i++) __dom.children[i].delayCss({top: '80%'})
+        }
+    };
+
+    /**
+     * 关闭一个
+     */
+    var __hide = function () {
+        if (!--__number) {
+            var __old = __dom;
+            __dom = undefined;
+            var diagonal = Math.sqrt(window.innerWidth * window.innerWidth + window.innerHeight * window.innerHeight);
+
+            if (800 < window.innerWidth) for (var i = 0; i < 4; i++) (function (i) {
+                setTimeout(function () {
+                    __old.children[i].delayCss({
+                        'opacity': 0.8,
+                        'border-width': diagonal / 2 + 'px',
+                        'left': (window.innerWidth - diagonal) / 2 + 'px',
+                        'top': (window.innerHeight - diagonal) / 2 + 'px'
+                    });
+                }, 100 * i);
+            })(i);
+
+            setTimeout(function () {
+                __old.delayCss({opacity: 0});
+                setTimeout(function () {
+                    document.body.removeChild(__old);
+                }, 500);
+            }, 800 < window.innerWidth ? 300 : 0)
+        }
+    };
+
+    $.ajax.setBeforeRequest(__show);
+    $.ajax.setAfterRequest(__hide);
+
+})();
+
+/**
+ * 头部以及侧栏的各种操作
+ */
+(function () {
+
+    /**
+     * 测算头部滚动的百分比
+     * @returns {number}
+     * @private
+     */
+    var __getPercent = function () {
+        if (window.pageYOffset > window.innerHeight - 4 * $.em2px()) return 1;
+        return window.pageYOffset / (window.innerHeight - 4 * $.em2px())
+    };
+
+    /**
+     * 监听向下箭头的事件
+     */
+    $('#starter').addEventListener('click', function () {
+        $.scroll(window.innerHeight - 4 * $.em2px())
+    });
+
+    /**
+     * 视差效果
+     * @private
+     */
+    var __parallax = function () {
+        // 百分比变量
+        var percent = __getPercent();
+        var comPercent = 1 - percent;
+
+        // 头部调整
+        if (window.pageYOffset) $('header')[0].class('opacity').css({'opacity': comPercent});
+        else $('header')[0].class().css({'opacity': comPercent});
+        $('#main-title').css({'top': comPercent * 30 + '%'});
+        $('#header').css({
+            'background-color': 'rgba(32, 48, 48, ' + percent + ')',
+            'top': comPercent * -4 + 'em'
+        });
+
+        // 侧栏的调整
+        var aside = $('aside')[0];
+        if (percent === 1 && $.em2px() * 50 < window.innerWidth && !$('body').hasClass('vertical')) {
+            var alphaOffsetTop = window.pageYOffset - window.innerHeight;
+            var betaOffsetTop = $('footer')[0].offsetTop - window.innerHeight - aside.clientHeight;
+            if (alphaOffsetTop + 4 * $.em2px() < betaOffsetTop - 4 * $.em2px()) {
+                aside.css({'margin-top': alphaOffsetTop + 6 * $.em2px() + 'px'});
+            } else {
+                aside.css({'margin-top': betaOffsetTop - 2 * $.em2px() + 'px'});
+            }
+        } else {
+            aside.css({'margin-top': '2em'});
+        }
+
+    };
+
+    /**
+     * 监听滚动以及调整窗口
+     */
+    window.addEventListener('scroll', __parallax);
+    window.addEventListener('resize', __parallax);
 
 })();
