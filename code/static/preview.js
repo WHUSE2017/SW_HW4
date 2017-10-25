@@ -392,3 +392,59 @@ $('#ajax-debug').addEventListener('click', function () {
     window.addEventListener('resize', __parallax);
 
 })();
+
+
+/**
+ * 过长标题的滚动
+ */
+var title = (function () {
+
+    var __timeout;
+
+    /**
+     * 测算主标题的宽度
+     * @returns {number}
+     * @private
+     */
+    var __getTitleWidth = function () {
+        var x = $.createElement('p', $('#main-title-content').innerText);
+        x.css({'font-size': '2em', 'line-height': '4em', 'position': 'fixed', 'left': '-999em'});
+        $('body').appendChild(x);
+        var width = x.clientWidth;
+        $('body').removeChild(x);
+        return width;
+    };
+
+    var __toLeft = function (times) {
+        var need = window.innerWidth - __getTitleWidth();
+        if (need < 0) {
+            $('#main-title-content').css({'margin-left': need + 'px'}, -need / $.em2px() / 4 * 1000);
+            __timeout = setTimeout(function () {
+                __toRight(++times)
+            }, -need / $.em2px() / 4 * 1000 + 1000
+            )
+        } else {
+            __timeout = setTimeout(function () {
+                __toRight(times)
+            }, 5000)
+        }
+    };
+
+    var __toRight = function (times) {
+        $('#main-title-content').css({'margin-left': 0}, 2000);
+        __timeout = setTimeout(function () {
+            __toLeft(times)
+        }, 3000 + times * 2000)
+    };
+
+    var __reset = function () {
+        if (__timeout) clearTimeout(__timeout);
+        __toRight(0)
+    };
+    __reset();
+
+    return {
+        reset: __reset
+    };
+
+})();
