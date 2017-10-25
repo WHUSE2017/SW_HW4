@@ -1,3 +1,5 @@
+'use strict';
+
 /**
  * 一个简单的 JavaScript 库
  */
