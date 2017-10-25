@@ -11,5 +11,11 @@ def preview():
     return html
 
 
+@app.route('/ajax')
+def ajax():
+    from time import sleep
+    sleep(1)
+    return ''
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)

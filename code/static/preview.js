@@ -383,21 +383,6 @@ $('#ajax-debug').addEventListener('click', function () {
             'background-color': 'rgba(32, 48, 48, ' + percent + ')',
             'top': comPercent * -4 + 'em'
         });
-
-        // 侧栏的调整
-        var aside = $('aside')[0];
-        if (percent === 1 && $.em2px() * 50 < window.innerWidth && !$('body').hasClass('vertical')) {
-            var alphaOffsetTop = window.pageYOffset - window.innerHeight;
-            var betaOffsetTop = $('footer')[0].offsetTop - window.innerHeight - aside.clientHeight;
-            if (alphaOffsetTop + 4 * $.em2px() < betaOffsetTop - 4 * $.em2px()) {
-                aside.css({'margin-top': alphaOffsetTop + 6 * $.em2px() + 'px'});
-            } else {
-                aside.css({'margin-top': betaOffsetTop - 2 * $.em2px() + 'px'});
-            }
-        } else {
-            aside.css({'margin-top': '2em'});
-        }
-
     };
 
     /**
