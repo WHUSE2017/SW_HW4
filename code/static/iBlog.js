@@ -719,3 +719,151 @@ var footer = (function () {
 
 })();
 
+/**
+ * 承载一切 a 标签的 ajax 操作
+ */
+var handle = (function () {
+    var createDataType = function (type, p1, p2, p3) {
+        var dataType = {};
+        if (type === 'list') {
+            dataType['type'] = type;
+            dataType['class'] = p1;
+            if (p1 === 'all') {
+                dataType['page'] = p2;
+            } else {
+                dataType['className'] = p2;
+                dataType['page'] = p3;
+            }
+        }
+        else if (type === 'post') {
+            dataType['type'] = type;
+            dataType['id'] = p1;
+        }
+        else if (type === 'edit') {
+            dataType['type'] = type;
+            dataType['id'] = p1;
+        }
+        else if (type === 'config') {
+            dataType['type'] = type;
+        }
+        else if (type === 'userManage') {
+            dataType['type'] = type;
+            dataType['page'] = p1;
+        }
+        else if (type === 'message' || type === 'toDoList') {
+            dataType['type'] = type;
+            dataType['page'] = p1;
+        }
+        else {
+            dataType['type'] = '404';
+        }
+
+        return dataType;
+    };
+
+    var getDataType = function (pathname) {
+
+        if (typeof pathname !== 'string') pathname = location.pathname;
+        pathname = decodeURI(pathname);
+        if (!pathname.search(path.url())) pathname = pathname.slice(path.url().length);
+
+        var match, dataType;
+        if (pathname === '/') dataType = createDataType('list', 'all', 1);
+        else if (match = pathname.match(/^\/page\/(\d+)$/)) dataType = createDataType('list', 'all', parseInt(match[1]));
+        else if (match = pathname.match(/^\/tag\/([^\/]+)$/)) dataType = createDataType('list', 'tag', match[1], 1);
+        else if (match = pathname.match(/^\/tag\/([^\/]+)\/page\/(\d+)$/)) dataType = createDataType('list', 'tag', match[1], parseInt(match[2]));
+        else if (match = pathname.match(/^\/category\/([^\/]+)$/)) dataType = createDataType('list', 'category', match[1], 1);
+        else if (match = pathname.match(/^\/category\/([^\/]+)\/page\/(\d+)$/)) dataType = createDataType('list', 'category', match[1], parseInt(match[2]));
+        else if (match = pathname.match(/^\/search\/([^\/]+)$/)) dataType = createDataType('list', 'search', match[1], 1);
+        else if (match = pathname.match(/^\/search\/([^\/]+)\/page\/(\d+)$/)) dataType = createDataType('list', 'search', match[1], parseInt(match[2]));
+        else if (match = pathname.match(/^\/post\/(\d+)$/)) dataType = createDataType('post', parseInt(match[1]));
+        else if (match = pathname.match(/^\/message$/)) dataType = createDataType('message', 1);
+        else if (match = pathname.match(/^\/message\/page\/(\d+)$/)) dataType = createDataType('message', parseInt(match[1]));
+        else if (match = pathname.match(/^\/toDoList$/)) dataType = createDataType('toDoList', 1);
+        else if (match = pathname.match(/^\/toDoList\/page\/(\d+)$/)) dataType = createDataType('toDoList', parseInt(match[1]));
+        else if (match = pathname.match(/^\/admin\/user\/manage$/)) dataType = createDataType('userManage', 1);
+        else if (match = pathname.match(/^\/admin\/user\/manage\/page\/(\d+)$/)) dataType = createDataType('userManage', parseInt(match[1]));
+        else if (pathname === '/admin/config') dataType = createDataType('config');
+        else if (pathname === '/post/add') dataType = createDataType('edit', 0);
+        else if (match = pathname.match(/^\/post\/edit\/(\d+)$/)) dataType = createDataType('edit', parseInt(match[1]));
+
+        return dataType;
+
+    };
+
+    var handle = function (pathname, href) {
+        if (href === location.href) return false;
+
+        if (pathname === '') return false;
+        var dataType = getDataType(pathname);
+
+        if (!dataType) return window.open(href, '_blank');
+        if (!history.pushState) return location.href = href;
+
+        load(dataType, pathname);
+
+    };
+
+    handle.getDataType = getDataType;
+
+    return handle;
+
+})();
+
+var config;
+var load = (function () {
+    var getConfig = function (allowTimes, noRefresh) {
+    };
+
+    var load = function (dataType, pathname) {
+        if (!config) return getConfig();
+        dataType || (dataType = handle.getDataType());
+
+        locker.on();
+        if (dataType['type'] === 'list') {
+        }
+        else if (dataType['type'] === 'post') {
+        }
+        else if (dataType['type'] === 'message') {
+        }
+        else if (dataType['type'] === 'toDoList') {
+        }
+        else if (dataType['type'] === 'userManage') {
+        }
+        else if (dataType['type'] === 'config') {
+        }
+        else if (dataType['type'] === 'edit') {
+        }
+    };
+
+    load.getConfig = getConfig;
+    return load
+
+})();
+
+
+/**
+ * 主函数区域
+ */
+(function () {
+    /**
+     * 阻止一切 a 标签的跳转, 并将其 pathname 以及 href 发送给 handle 函数
+     * handle 函数判断此链接是否可以通过 ajax 方式加载页面
+     * 若不能, 则会根据以下情况进行处理
+     *     浏览器不支持 history.pushState: 直接修改地址栏为 href, 重新加载界面
+     *     请求的连接不属于本站: 在新窗口打开这个 href
+     */
+    window.addEventListener('click', function (event) {
+        var dom = event.target;
+        while (dom.parentNode)
+            if (dom.nodeName === 'A') return handle((event.preventDefault(), dom.pathname), dom.href);
+            else dom = dom.parentNode;
+    });
+    window.addEventListener('popstate', function (event) {
+        load(event.state);
+    });
+
+    // fontAwesome css
+    $('head').append($.createElement('link', {rel: 'stylesheet', href: path.url(window.iBlog['fontAwesomeCSS'])}));
+    load();
+})();
