@@ -441,3 +441,281 @@ var locker = (function () {
     }
 
 })();
+
+var header = (function () {
+    // 创建 dom
+    (function () {
+        var user, search;
+        $('body').append($.createElement('header').append($.createElement('section', {
+            id: 'header-list'
+        }).append($.createElement('a', 'Home', {
+            class: 'header-list-left',
+            href: path.url('/')
+        })).append($.createElement('a', 'Message', {
+            class: 'header-list-left',
+            href: path.url('/message')
+        })).append($.createElement('a', 'toDoList', {
+            class: 'header-list-left',
+            href: path.url('/toDoList')
+        })).append(user = $.createElement('a', {
+            class: 'header-list-right fa fa-user-o'
+        })).append($.createElement('a', {
+            class: 'header-list-right fa fa-cog',
+            href: path.url('/admin/config')
+        })).append(search = $.createElement('a', {
+            class: 'header-list-right fa fa-search'
+        }))).append($.createElement('hr', {
+            id: 'header-hr'
+        })).append($.createElement('section', {
+            id: 'sub-title'
+        })).append($.createElement('section', {
+            id: 'starter'
+        })));
+
+    })();
+    // 背景
+    var background = (function () {
+        var oldURL, targetURL, allowShow, timeout, interval, shadowCss = $.createElement('style');
+        $('head').append(shadowCss);
+
+        return function (url) {
+            if (url === oldURL) return false;
+            oldURL = url;
+            shadowCss.innerText = 'header::before{background-color:rgba(32,48,48,1)}';
+            if (timeout) clearTimeout(timeout);
+            allowShow = false;
+            timeout = setTimeout(function () {
+                allowShow = true;
+            }, 500);
+            if (!/^#[0-9a-f]{3}$/.test(url) && !/^#[0-9a-f]{6}$/.test(url)) {
+                url = path.url(url);
+                $('#header').css({'background-color': '#233'});
+                $.ajax.get({
+                    url: url,
+                    success: (function (url) {
+                        return function () {
+                            if (url === targetURL) {
+                                if (interval) clearInterval(interval);
+                                interval = setInterval(function () {
+                                    if (allowShow) {
+                                        clearInterval(interval);
+                                        $('header')[0].css({'background-image': 'url(' + url + ')'});
+                                        shadowCss.innerText = 'header::before{background-color:rgba(0,0,0,.3)}';
+                                    }
+                                }, 50);
+                            }
+                        }
+                    })(targetURL = url)
+                });
+            }
+            else {
+                $('#header').css({'background-color': url});
+                if (interval) clearInterval(interval);
+                interval = setInterval(function () {
+                    if (allowShow) {
+                        clearInterval(interval);
+                        $('header')[0].css({'background-image': '', 'background-color': url});
+                        shadowCss.innerText = 'header::before{background-color:rgba(0,0,0,.3)}';
+                    }
+                }, 50);
+            }
+        }
+    })();
+    // 标题
+    var title = (function () {
+
+        var timeout;
+        // 创建 dom
+        (function () {
+            $('body').append($.createElement('section', {
+                id: 'header'
+            }).append($.createElement('section', {
+                id: 'main-title'
+            }).append($.createElement('section', {
+                id: 'main-title-content'
+            }))));
+        })();
+
+        /**
+         * 测算主标题的宽度
+         */
+        var getTitleWidth = function () {
+            var width, x;
+            $('body').append(x = $.createElement('p', $('#main-title-content').innerText).css({
+                'font-size': '2rem',
+                'line-height': '4rem',
+                'position': 'fixed',
+                'top': '-9rem',
+                'white-space': 'nowrap'
+            })).remove((width = x.clientWidth, x));
+            return width;
+        };
+
+        /**
+         * 向左走
+         */
+        var toLeft = function (times) {
+            var need = window.innerWidth - getTitleWidth();
+            if (need < 0) {
+                $('#main-title-content').css({'margin-left': need + 'px'}, -need / $.rem2px() / 4 * 1000);
+                timeout = setTimeout(function () {
+                    toRight(++times)
+                }, -need / $.rem2px() / 4 * 1000 + 1000)
+            } else timeout = setTimeout(function () {
+                toRight(times)
+            }, 5000)
+
+        };
+
+        /**
+         * 向右走
+         */
+        var toRight = function (times) {
+            if (times === undefined) times = 0;
+            $('#main-title-content').css({'margin-left': 0}, 2000);
+            timeout = setTimeout(function () {
+                toLeft(times)
+            }, 3000 + times * 2000)
+        };
+
+        return {
+            /**
+             * text 参数表示一个新的标题
+             * 若不带参数则将标题复位并重新计数
+             */
+            resetMain: function (text) {
+                var main = $('#main-title-content');
+                if (main.innerText === text) return false;
+                if (timeout) clearTimeout(timeout);
+                if (!text) return toRight(0);
+                main.css({opacity: 0}, main.innerText === '' ? 0 : 500);
+                setTimeout(function () {
+                    main.css({opacity: 1}).innerText = text;
+                    toRight(0)
+                }, main.innerText === '' ? 0 : 500);
+            },
+            resetSub: function (text) {
+                var sub = $('#sub-title');
+                if (sub.innerText === text) return false;
+                sub.css({opacity: 0}, 500);
+                setTimeout(function () {
+                    sub.css().innerText = text;
+                }, 500);
+            }
+        };
+
+    })();
+
+    return {
+        resetMain: title.resetMain,
+        resetSub: title.resetSub,
+        changeBackground: background
+    };
+})();
+
+var main = (function () {
+    // 创建 dom
+    (function () {
+        $('body').append($.createElement('main', {
+            id: 'main'
+        }).append($.createElement('section', {
+            id: 'main-block'
+        })));
+    })();
+})();
+
+var aside = (function () {
+    var dom;
+    $('body').append($.createElement('aside').append(dom = $.createElement('section', {id: 'aside-block'})));
+
+    var reset = function () {
+        dom.empty();
+        dom.append(
+            $.createElement('section', '标签', {class: 'aside-title'})
+        ).append($.createElement('hr')).append(
+            $.createElement('section', '分类', {class: 'aside-title'})
+        ).append($.createElement('hr'));
+    };
+    reset();
+
+    return {
+        setTagsCategories: function (tags, categories) {
+            reset();
+            // 提升效率, 不再检查输入
+            // if (!Array.isArray(tags) || tags.some(function (t) {
+            //         return typeof t !== 'string'
+            //     })) return false;
+            while (tags.length) (function (tag) {
+                $('#aside-block').insert(2, $.createElement('a', tag, {class: 'tags', href: path.url('/tag/' + tag)}));
+            })(tags.pop());
+            while (categories.length) (function (category) {
+                $('#aside-block').append($.createElement('a', category, {
+                    class: 'categories',
+                    href: path.url('/category/' + category)
+                }))
+            })(categories.shift());
+        }
+    }
+})();
+
+var footer = (function () {
+    $('body').append($.createElement('footer', {id: 'footer'}));
+
+    return {
+        copyright: function (text) {
+            $('footer')[0].empty().append(
+                $.createElement('p', '© ' + new Date().getFullYear() + ' ').append(
+                    $.createElement('a', text, {href: path.url('/')})
+                )
+            );
+        }
+    }
+})();
+
+/**
+ * 头部以及侧栏的各种操作
+ */
+(function () {
+
+    /**
+     * 测算头部滚动的百分比
+     * @returns {number}
+     * @private
+     */
+    var __getPercent = function () {
+        if (window.pageYOffset > window.innerHeight - 4 * $.rem2px()) return 1;
+        return window.pageYOffset / (window.innerHeight - 4 * $.rem2px())
+    };
+
+    /**
+     * 监听向下箭头的事件
+     */
+    $('#starter').addEventListener('click', function () {
+        $.scroll(window.innerHeight - 4 * $.rem2px())
+    });
+
+    /**
+     * 视差效果
+     * @private
+     */
+    var __parallax = function () {
+        // 百分比变量
+        var percent = __getPercent();
+        var comPercent = 1 - percent;
+
+        // 头部调整
+        if (window.pageYOffset) $('header')[0].class('opacity').css({'opacity': comPercent});
+        else $('header')[0].class().css({'opacity': comPercent});
+        $('#main-title').css({'top': comPercent * 30 + '%'});
+        $('#header').css({'top': comPercent * -4 + 'em'});
+
+    };
+
+    /**
+     * 监听滚动以及调整窗口
+     */
+    window.addEventListener('scroll', __parallax);
+    window.addEventListener('resize', __parallax);
+
+})();
+
