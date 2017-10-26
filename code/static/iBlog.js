@@ -622,6 +622,57 @@ var main = (function () {
             id: 'main-block'
         })));
     })();
+
+    var createListCard = function (data) {
+        var text;
+        if (data['title'].length) text =
+            '### ' + data['title'] + '\n\n' +
+            '#### ' + new Date(data['time'] * 1000).toReadableDateString() + '\n\n---\n\n' +
+            data['text'] +
+            (data['full'] ? '' : '\n\n---\n\n点击阅读更多');
+        else text =
+            data['text'] + '\n\n---\n\n' +
+            (data['full'] ? '' : '点击阅读更多' + '\n\n---\n\n') +
+            '#### ' + new Date(data['time'] * 1000).toReadableDateString();
+
+        var card = $.createElement('a', {class: 'card markdown', href: path.url('/post/' + data['id'])});
+        card.innerHTML = marked(text);
+        return card;
+    };
+
+    return {
+        writeList: function (data, dataType) {
+            $('body').className = '';
+            header.changeBackground(path.url('/static/u0.jpg'));
+            header.resetMain(config['siteName']);
+            if (dataType['class'] === 'all') header.resetSub(
+                1 < dataType['page'] ? '第 ' + dataType['page'] + ' 页' : config['siteDescription']
+            );
+            else header.resetSub(
+                (dataType['class'] === 'tag' ? '标签' : (dataType['class'] === 'category' ? '分类' : '搜索')) + ' - ' +
+                dataType['className'] + (1 < dataType['page'] ? ' - ' + '第 ' + dataType['page'] + ' 页' : '')
+            );
+            var dom = $('#main-block').empty();
+            if (!data.length) return dom.append(
+                $.createElement('h3', dataType['class'] === 'search' ? '搜索无结果' : '还没有文章')
+            );
+            for (var i = 0; i < data.length; i++) dom.append(createListCard(data[i]));
+            var nav = $.createElement('section', {id: 'nav'});
+            var href = path.url(
+                (
+                    dataType['class'] === 'all' ?
+                        '' :
+                        '/' + dataType['class'] + '/' + dataType['className']
+                ) + '/page/'
+            );
+            if (1 < dataType['page']) nav.append($.createElement('a', '上一页', {
+                id: 'nav-pre',
+                href: href + (dataType['page'] - 1)
+            }));
+            nav.append($.createElement('a', '下一页', {id: 'nav-next', href: href + (dataType['page'] + 1)}));
+            dom.append(nav);
+        }
+    }
 })();
 
 var aside = (function () {
@@ -813,6 +864,23 @@ var handle = (function () {
 var config;
 var load = (function () {
     var getConfig = function (allowTimes, noRefresh) {
+        locker.on();
+        if (allowTimes === undefined) allowTimes = 1;
+        if (!allowTimes) return false;
+        $.ajax.get({
+            url: path.api('/json/config.json'),
+            success: function (data) {
+                locker.off();
+                config = JSON.parse(data)['data'];
+                aside.setTagsCategories(config['tags'].slice(), config['categories'].slice());
+                footer.copyright(config['siteName']);
+                if (!noRefresh) load();
+            },
+            error: function () {
+                locker.off();
+                getConfig(--allowTimes);
+            }
+        })
     };
 
     var load = function (dataType, pathname) {
@@ -821,6 +889,34 @@ var load = (function () {
 
         locker.on();
         if (dataType['type'] === 'list') {
+            if (config) {
+                $.ajax.get({
+                    url: path.api(
+                        '/json/list/' + dataType['class'] + '/' +
+                        (dataType['class'] === 'all' ? '' : dataType['className'] + '/') +
+                        ((dataType['page'] - 1) * config['pageSize']) + '.' + config['pageSize'] + '.json'
+                    ),
+                    success: function (data) {
+                        locker.off();
+                        data = JSON.parse(data);
+                        if (!data.status && 1 < dataType['page']) {
+                            locker.off();
+                            new Notify('没有更多文章了').show();
+                        } else {
+                            $.scroll(0, window.pageYOffset ? 1000 : 0);
+                            setTimeout(function () {
+                                locker.off();
+                                if (pathname) history.pushState(dataType, '', path.url(pathname));
+                                main.writeList(data.status ? data['data'] : [], dataType);
+                            }, window.pageYOffset ? 1000 : 0);
+                        }
+                    },
+                    error: function () {
+                        locker.off();
+                        new Notify('网络错误').show();
+                    }
+                })
+            } else locker.off();
         }
         else if (dataType['type'] === 'post') {
         }
