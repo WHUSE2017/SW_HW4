@@ -919,16 +919,28 @@ var load = (function () {
             } else locker.off();
         }
         else if (dataType['type'] === 'post') {
+            locker.off();
+            header.resetMain('正在开发');
         }
         else if (dataType['type'] === 'message') {
+            locker.off();
+            header.resetMain('正在开发');
         }
         else if (dataType['type'] === 'toDoList') {
+            locker.off();
+            header.resetMain('正在开发');
         }
         else if (dataType['type'] === 'userManage') {
+            locker.off();
+            header.resetMain('正在开发');
         }
         else if (dataType['type'] === 'config') {
+            locker.off();
+            header.resetMain('正在开发');
         }
         else if (dataType['type'] === 'edit') {
+            locker.off();
+            header.resetMain('正在开发');
         }
     };
 
