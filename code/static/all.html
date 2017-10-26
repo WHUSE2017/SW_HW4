@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta charset="UTF-8">
+    <title>iBlog</title>
+    <meta name="theme-color" content="#aaaaaa">
+    <meta name="viewport" content="width = device-width,user-scalable=no"/>
+    <script src="/static/marked.min.js"></script>
+    <link rel="stylesheet" href="/static/markdown.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+
+</body>
+<script>
+    var isIE = function (ver) {
+        var b = document.createElement('b');
+        b.innerHTML = '<!--[if IE ' + ver + ']><i></i><![endif]-->';
+        return b.getElementsByTagName('i').length === 1
+    };
+    if (isIE(5) || isIE(6) || isIE(7) || isIE(9) || isIE(9)) {
+        document.getElementsByTagName('body')[0].innerText = '抱歉, 不再支持您的浏览器';
+        throw 'Unsupported Browser'
+    }
+
+    window.iBlog = {
+        // 若为 true, 加载的文件则会添加一个当前时间戳的查询字符串, 来避免缓存
+        debug: true,
+        // 轻易地扩展为 CDN 地址
+        mainJS: '/static/iBlog.js',
+        mainCSS: '/static/iBlog.css',
+        rootAPIPath: '',
+        rootStaticPath: '',
+        fontAwesomeCSS: '//cdn.staticfile.org/font-awesome/4.7.0/css/font-awesome.min.css'
+    };
+
+    var style = document.createElement('link');
+    style.rel = 'stylesheet';
+    style.href = iBlog['mainCSS'] + (window.iBlog['debug'] ? '?' + new Date().getTime() : '');
+    document.head.appendChild(style);
+
+    var script = document.createElement('script');
+    script.src = iBlog['mainJS'] + (window.iBlog['debug'] ? '?' + new Date().getTime() : '');
+    document.head.appendChild(script);
+</script>
+</html>
