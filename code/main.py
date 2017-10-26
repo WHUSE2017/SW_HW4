@@ -138,5 +138,49 @@ def config():
     return dumps(result, ensure_ascii=False)
 
 
+@app.route('/json/list/all/<int:start_num>.<int:limit_num>.json')
+@app.route('/json/list/tag/<tag_name>/<int:start_num>.<int:limit_num>.json')
+@app.route('/json/list/category/<category_name>/<int:start_num>.<int:limit_num>.json')
+@app.route('/json/list/search/<key_words>/<int:start_num>.<int:limit_num>.json')
+def api_list(*args, **kwargs):
+    result = {'status': False}
+    cursor = get_cursor()
+    if 'tag_name' in kwargs:
+        cursor.execute(
+            'SELECT * FROM post WHERE tag LIKE ? ORDER BY time DESC LIMIT ?, ?',
+            ('%' + kwargs['tag_name'] + '%', kwargs['start_num'], kwargs['limit_num'])
+        )
+    elif 'category_name' in kwargs:
+        cursor.execute(
+            'SELECT * FROM post WHERE category = ? ORDER BY time DESC LIMIT ?, ?',
+            (kwargs['category_name'], kwargs['start_num'], kwargs['limit_num'],)
+        )
+    elif 'key_words' in kwargs:
+        cursor.execute(
+            'SELECT * FROM post WHERE text LIKE ? ORDER BY time DESC LIMIT ?, ?',
+            ('%' + kwargs['key_words'] + '%', kwargs['start_num'], kwargs['limit_num'])
+        )
+    else:
+        cursor.execute(
+            'SELECT * FROM post ORDER BY time DESC LIMIT ?, ?',
+            (kwargs['start_num'], kwargs['limit_num'],)
+        )
+    posts = cursor.fetchall()
+    if posts:
+        result['status'] = True
+        data = []
+        for post in posts:
+            text = re.split(r'<!--\s*more\s*-->', post['text'])
+            data.append({
+                'id': post['id'],
+                'title': post['title'],
+                'time': post['time'],
+                'text': text[0],
+                'full': len(text) == 1
+            })
+        result['data'] = data
+    return dumps(result, ensure_ascii=False) + '\n'
+
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', debug=True)
