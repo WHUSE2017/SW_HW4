@@ -727,6 +727,8 @@ var main = (function () {
         })));
     })();
 
+    var mde = 2;
+
     var createListCard = function (data) {
         var text;
         if (data['title'].length) text =
@@ -919,6 +921,111 @@ var main = (function () {
             var comment = $.createElement('section', {id: 'comment'});
             dom.append(comment);
             loadComment(comment, dataType['id']);
+        },
+        writeEditor: function (data, dataType) {
+            $('body').className = 'broad-main vertical';
+            if (data && data['image']) header.changeBackground(data['image']);
+            else header.changeBackground(randomRGB());
+            if (data) header.resetMain('编辑文章' + (data['title'] ? ' - ' + data['title'] : ''));
+            else header.resetMain('添加新文章');
+            header.resetSub('');
+            var dom = $('#main-block').empty();
+            if (!login.getState()) return login.show();
+
+            if (mde) {
+                new Notify('加载编辑器...').show();
+                locker.on();
+                var onLoadFn = function () {
+                    if (!--mde) {
+                        locker.off();
+                        new Notify('编辑器加载完毕').show();
+                        main.writeEditor(data, dataType);
+                    }
+                };
+                var script = $.createElement('script', {src: path.url(window.iBlog['simpleMDEJS'])});
+                var style = $.createElement('link', {rel: 'stylesheet', href: path.url(window.iBlog['simpleMDECSS'])});
+                script.addEventListener('load', onLoadFn);
+                style.addEventListener('load', onLoadFn);
+                $('head').append(script).append(style);
+                return;
+            }
+
+            var editor = $.createElement('section', {class: 'editor'});
+            var title, time, image, category, tag, textarea, button;
+            category = $.createElement('select');
+            for (var i = 0; i < config['categories'].length; i++)
+                category.append($.createElement('option', config['categories'][i], {value: config['categories'][i]}));
+            editor.append(title = $.createElement('input', {
+                placeholder: '标题',
+                maxLength: 30
+            })).append(time = $.createElement('input', {
+                type: 'datetime-local'
+            })).append(textarea = $.createElement('textarea', {
+                placeholder: '内容'
+            })).append(tag = $.createElement('input', {
+                placeholder: '请输入标签, 多个标签请以 "," 分隔',
+                maxLength: 100
+            })).append(category).append(button = $.createElement('button', '提交'));
+
+            tag.addEventListener('focusout', function () {
+                var old = tag.value.split(/[^\u4e00-\u9fa5\w\s]+/);
+                tag.value = '';
+                for (var i = 0; i < old.length; i++) if (old[i].trim().length) tag.value += ', ' + old[i].trim();
+                tag.value = tag.value.slice(2)
+            });
+
+            button.addEventListener('click', function () {
+                $.ajax.post({
+                    url: path.api(dataType['id'] ? '/admin/post/edit' : '/admin/post/add'),
+                    data: {
+                        id: dataType['id'],
+                        time: time.value.toDateFromInputBox().toUnixStamp(),
+                        title: title.value,
+                        category: category.value,
+                        tag: tag.value,
+                        text: simpleMDE.value()
+                    },
+                    success: function (data) {
+                        if (JSON.parse(data).status) {
+                            new Notify(dataType['id'] ? '修改成功' : '添加成功').show();
+                            handle(dataType['id'] ? '/post/' + dataType['id'] : '/');
+                            if (tag.value.split(', ').some(function (t) {
+                                    return config['tags'].indexOf(t) < 0
+                                })) {
+                                console.log('re get config');
+                                load.getConfig(1, true);
+                            }
+                        } else new Notify(dataType['id'] ? '修改失败' : '添加失败').show();
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+
+            dom.append(editor);
+
+            var simpleMDE = new SimpleMDE({
+                // toolbar: ['bold', 'italic', 'heading', '|', 'quote'],
+                element: textarea,
+                autoDownloadFontAwesome: false,
+                spellChecker: false,
+                tabSize: 4,
+                status: false
+            });
+
+            if (data) {
+                title.value = data['title'];
+                time.value = new Date(data['time'] * 1000).toInputBoxValue();
+                simpleMDE.value(data['text']);
+                tag.value = data['tag'];
+                category.value = data['category'];
+            }
+            else {
+                time.value = new Date().toInputBoxValue();
+                category.value = config['categories'][0];
+            }
+
         }
     }
 })();
