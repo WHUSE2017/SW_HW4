@@ -442,6 +442,106 @@ var locker = (function () {
 
 })();
 
+/**
+ * 登录
+ */
+var login = (function () {
+
+    var state = false;
+    if (localStorage.getItem('login') === '1') {
+        checkingLogin = true;
+        locker.on();
+        $.ajax.post({
+            url: path.api('/admin/login_state'),
+            success: function (data) {
+                load();
+                locker.off();
+                state = JSON.parse(data).status;
+                if (!state) localStorage.setItem('login', '0')
+            },
+            error: function () {
+                load();
+                locker.off();
+            }
+        })
+    }
+
+    return {
+        getState: function () {
+            return state;
+        },
+        show: function () {
+            var dom = {};
+            dom.login = $.createElement('section', {id: 'login'}).append(
+                $.createElement('section', {class: 'card'}).append(
+                    $.createElement('section', {class: 'editor'}).append(dom.username = $.createElement('input', {
+                        placeholder: '用户名',
+                        maxLength: 20
+                    })).append(dom.password = $.createElement('input', {
+                        type: 'password',
+                        placeholder: '密码',
+                        maxLength: 20
+                    })).append(dom.button = $.createElement('button', state ? '修改密码' : '登录')).append(dom.logout = $.createElement('button', '登出', {style: state ? 'display:block' : 'display:none'}))
+                )
+            );
+            var hide = function () {
+                if (dom.login.parentNode !== $('body')) return false;
+                dom.login.css({top: '150%'});
+                dom.shadow.css({opacity: 0});
+                window.setTimeout(function () {
+                    $('body').remove(dom.login).remove(dom.shadow);
+                }, 500)
+            };
+            dom.shadow = $.createElement('section', {class: 'shadow'});
+            dom.button.addEventListener('click', function () {
+                if (dom.username.value === '') return new Notify('请提供用户名').show();
+                if (dom.password.value === '') return new Notify('请提供密码').show();
+                $.ajax.post({
+                    url: path.api(state ? '/admin/change/password' : '/admin/login'),
+                    data: {
+                        username: dom.username.value,
+                        password: dom.password.value
+                    },
+                    success: function (data) {
+                        if (state = JSON.parse(data).status) {
+                            new Notify('成功').show();
+                            localStorage.setItem('login', '1');
+                            hide();
+                            load();
+                        } else {
+                            new Notify('请检查您的输入').show();
+                        }
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+            dom.logout.addEventListener('click', function () {
+                $.ajax.post({
+                    url: path.api('/admin/logout'),
+                    success: function (data) {
+                        if (!(state = !JSON.parse(data).status)) {
+                            new Notify('登出成功').show();
+                            localStorage.setItem('login', '0');
+                            hide();
+                            load();
+                        } else {
+                            new Notify('登出失败').show();
+                        }
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+            dom.shadow.addEventListener('click', hide);
+            $('body').append(dom.login.delay(30).css({top: '50%'})).append(dom.shadow.delay(30).css({opacity: 1}))
+        }
+    }
+})();
+var checkingLogin;
+
 var header = (function () {
     // 创建 dom
     (function () {
@@ -472,6 +572,10 @@ var header = (function () {
             id: 'starter'
         })));
 
+        user.addEventListener('click', login.show);
+        search.addEventListener('click', function () {
+
+        });
     })();
     // 背景
     var background = (function () {
@@ -919,28 +1023,16 @@ var load = (function () {
             } else locker.off();
         }
         else if (dataType['type'] === 'post') {
-            locker.off();
-            header.resetMain('正在开发');
-        }
-        else if (dataType['type'] === 'message') {
-            locker.off();
-            header.resetMain('正在开发');
-        }
-        else if (dataType['type'] === 'toDoList') {
-            locker.off();
-            header.resetMain('正在开发');
-        }
-        else if (dataType['type'] === 'userManage') {
-            locker.off();
-            header.resetMain('正在开发');
-        }
-        else if (dataType['type'] === 'config') {
-            locker.off();
-            header.resetMain('正在开发');
         }
         else if (dataType['type'] === 'edit') {
-            locker.off();
-            header.resetMain('正在开发');
+        }
+        else if (dataType['type'] === 'config') {
+        }
+        else if (dataType['type'] === 'message') {
+        }
+        else if (dataType['type'] === 'toDoList') {
+        }
+        else if (dataType['type'] === 'userManage') {
         }
     };
 
@@ -973,5 +1065,5 @@ var load = (function () {
 
     // fontAwesome css
     $('head').append($.createElement('link', {rel: 'stylesheet', href: path.url(window.iBlog['fontAwesomeCSS'])}));
-    load();
+    if (!checkingLogin) load();
 })();
