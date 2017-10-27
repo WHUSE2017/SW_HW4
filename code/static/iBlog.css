@@ -289,6 +289,28 @@ main #main-block #nav a {
     margin: 0 1em;
 }
 
+.editor {
+    width: 100%;
+}
+
+.editor input, .editor select, .editor textarea, .editor button {
+    width: calc(100% - 2em);
+    margin: 1em 0;
+    padding: 0 1em;
+    font-size: 1em;
+    line-height: 2em;
+    border: 1px solid #eee;
+    border-radius: .25em;
+}
+
+.editor textarea {
+    min-height: 15em;
+}
+
+.editor button, .editor select {
+    width: 100%;
+}
+
 #comment {
     border-top: 3px solid #aaaaaa;
     margin-top: 2em;
