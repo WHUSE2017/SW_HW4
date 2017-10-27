@@ -775,6 +775,51 @@ var main = (function () {
             }));
             nav.append($.createElement('a', '下一页', {id: 'nav-next', href: href + (dataType['page'] + 1)}));
             dom.append(nav);
+        },
+        writeArticle: function (data, dataType) {
+            $('body').className = 'vertical';
+            if (data['image']) header.changeBackground(data['image']);
+            else header.changeBackground(randomRGB());
+            header.resetMain(data['title'].length ? data['title'] : '无题');
+            header.resetSub(new Date(data['time'] * 1000).toReadableFullString() + ' - ' + data['category']);
+            var dom = $('#main-block').empty();
+            var text = $.createElement('section', {class: 'markdown'});
+            text.innerHTML = marked(data['text']);
+            dom.append(text);
+            if (login.getState()) {
+                var del;
+                dom.append($.createElement('section', {
+                    id: 'article-admin'
+                }).append($.createElement('a', ' 编辑', {
+                    id: 'article-edit',
+                    href: path.url('/post/edit/' + dataType['id'])
+                }).insert(0, $.createElement('i', {
+                    class: 'fa fa-pencil'
+                }))).append(del = $.createElement('a', ' 删除', {
+                    id: 'article-delete'
+                }).insert(0, $.createElement('i', {class: 'fa fa-trash'}))));
+                del.addEventListener('click', function () {
+                    if (confirm('真的要删除吗?')) $.ajax.post({
+                        url: path.api('/admin/post/delete'),
+                        data: {
+                            id: dataType['id']
+                        },
+                        success: function (data) {
+                            if (JSON.parse(data).status) {
+                                new Notify('删除成功').show();
+                                handle('/')
+                            } else new Notify('删除失败').show()
+                        },
+                        error: function () {
+                            new Notify('网络错误').show()
+                        }
+                    })
+                })
+            }
+            if (data['image']) header.changeBackground(data['image']);
+            var comment = $.createElement('section', {id: 'comment'});
+            dom.append(comment);
+            loadComment(comment, dataType['id']);
         }
     }
 })();
@@ -1023,6 +1068,27 @@ var load = (function () {
             } else locker.off();
         }
         else if (dataType['type'] === 'post') {
+            $.ajax.get({
+                url: path.api('/json/post/' + dataType['id'] + '.json'),
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data.status) {
+                        $.scroll(0, window.pageYOffset ? 1000 : 0);
+                        setTimeout(function () {
+                            locker.off();
+                            if (pathname) history.pushState(dataType, '', path.url(pathname));
+                            main.writeArticle(data['data'], dataType)
+                        }, window.pageYOffset ? 1000 : 0);
+                    } else {
+                        locker.off();
+                        new Notify('没有这篇文章').show();
+                    }
+                },
+                error: function () {
+                    locker.off();
+                    new Notify('网络错误').show();
+                }
+            })
         }
         else if (dataType['type'] === 'edit') {
         }
