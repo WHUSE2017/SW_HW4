@@ -746,6 +746,49 @@ var main = (function () {
 
     var loadComment = function (dom, id) {
         dom.empty();
+        var nickname, email, text, button, writer;
+        var card = $.createElement('section', {
+            class: 'card'
+        }).append(writer = $.createElement('section', {
+            class: 'editor'
+        }));
+        writer.append(nickname = $.createElement('input', {
+            placeholder: '昵称',
+            maxLength: 20
+        })).append(email = $.createElement('input', {
+            placeholder: '邮箱',
+            maxLength: 20
+        })).append(text = $.createElement('textarea', {
+            placeholder: '内容'
+        })).append(button = $.createElement('button', '添加新评论'));
+        button.addEventListener('click', function () {
+            if (nickname.value === '') return new Notify('还没有填写昵称').show();
+            if (email.value === '') return new Notify('还没有填写邮箱').show();
+            if (!/[\w-.]+@([\w-]+\.)+\w+/.test(email.value)) return new Notify('邮箱格式似乎不正确').show();
+            if (text.value === '') return new Notify('还没有填写内容').show();
+            $.ajax.post({
+                url: path.api('/comment/add'),
+                data: {
+                    id: id,
+                    name: nickname.value,
+                    email: email.value,
+                    text: text.value
+                },
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (data.status) {
+                        new Notify('评论成功').show();
+                        loadComment(dom, id);
+                    } else {
+                        new Notify('评论失败').show()
+                    }
+                },
+                error: function () {
+                    new Notify('网络错误').show()
+                }
+            })
+        });
+        dom.append(card);
         $.ajax.get({
             url: path.api('/json/comment/' + id + '.json'),
             success: function (data) {
