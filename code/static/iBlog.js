@@ -744,6 +744,17 @@ var main = (function () {
         return card;
     };
 
+    var randomRGB = function () {
+        var x = [99], num = 0;
+        while (24 < x.reduce(function (a, b) {
+            return a + b
+        })) {
+            num = Number(Math.floor(Math.random() * 0x1000));
+            x = [num & 0xF, (num >> 4) & 0xF, (num >> 8) & 0xF];
+        }
+        return '#' + ((num > 0xF) ? ((num > 0xFF) ? '' : '0') : '00') + num.toString(16);
+    };
+
     return {
         writeList: function (data, dataType) {
             $('body').className = '';
