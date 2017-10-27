@@ -1297,14 +1297,60 @@ var load = (function () {
             })
         }
         else if (dataType['type'] === 'edit') {
+            if (dataType['id']) {
+                $.ajax.get({
+                    url: path.api('/json/post/' + dataType['id'] + '.json'),
+                    success: function (data) {
+                        data = JSON.parse(data);
+                        if (data.status) {
+                            $.scroll(0, window.pageYOffset ? 1000 : 0);
+                            setTimeout(function () {
+                                locker.off();
+                                if (pathname) history.pushState(dataType, '', path.url(pathname));
+                                main.writeEditor(data['data'], dataType);
+                            }, window.pageYOffset ? 1000 : 0);
+                        } else new Notify('获取文章失败').show();
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                });
+            } else {
+                $.scroll(0, window.pageYOffset ? 1000 : 0);
+                setTimeout(function () {
+                    locker.off();
+                    if (pathname) history.pushState(dataType, '', path.url(pathname));
+                    main.writeEditor(undefined, dataType);
+                }, window.pageYOffset ? 1000 : 0);
+            }
         }
         else if (dataType['type'] === 'config') {
+            if (pathname) history.pushState(dataType, '', path.url(pathname));
+            header.resetMain('设置');
+            header.resetSub('正在开发');
+            $('#main-block').empty();
+            locker.off();
         }
         else if (dataType['type'] === 'message') {
+            if (pathname) history.pushState(dataType, '', path.url(pathname));
+            header.resetMain('Message');
+            header.resetSub('正在开发');
+            $('#main-block').empty();
+            locker.off();
         }
         else if (dataType['type'] === 'toDoList') {
+            if (pathname) history.pushState(dataType, '', path.url(pathname));
+            header.resetMain('toDoList');
+            header.resetSub('正在开发');
+            $('#main-block').empty();
+            locker.off();
         }
         else if (dataType['type'] === 'userManage') {
+            if (pathname) history.pushState(dataType, '', path.url(pathname));
+            header.resetMain('用户管理');
+            header.resetSub('正在开发');
+            $('#main-block').empty();
+            locker.off();
         }
     };
 
