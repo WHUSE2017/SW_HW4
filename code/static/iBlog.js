@@ -757,6 +757,28 @@ var main = (function () {
                         new Date(data['data'][i]['time'] * 1000).toReadableFullString() + '\n\n---\n\n' +
                         data['data'][i]['text'] + '\n\n'
                     );
+                    c.addEventListener('click', (function (uid) {
+                        return function () {
+                            if (!login.getState()) return;
+                            if (confirm('确定删除这条评论吗?')) $.ajax.post({
+                                url: path.api('/comment/delete'),
+                                data: {
+                                    uid: uid
+                                },
+                                success: function (data) {
+                                    data = JSON.parse(data);
+                                    if (data.status) {
+                                        new Notify('删除成功').show();
+                                        loadComment(dom, id);
+                                    }
+                                    else new Notify('删除失败').show();
+                                },
+                                error: function () {
+                                    new Notify('网络错误').show();
+                                }
+                            })
+                        }
+                    })(data['data'][i]['uid']));
                     dom.append(c)
                 }
                 else dom.append($.createElement('h3', '还没有评论'));
