@@ -269,7 +269,11 @@ main #main-block #nav a {
 }
 
 .vertical aside #aside-block .categories {
-    color: #000000;
+    color: #FFFFFF;
+}
+
+.vertical aside #aside-block .categories:hover {
+    color: #FFFFFF;
 }
 
 aside {
@@ -323,7 +327,7 @@ aside #aside-block .categories {
 }
 
 aside #aside-block .categories:hover {
-    color: #aaaaaa;
+    color: #FFFFFF;
 }
 
 /* ---------- 页尾 ---------- */
@@ -341,6 +345,14 @@ footer p {
     position: absolute;
     margin-left: -50%;
     left: 50%;
+    color: #FFFFFF;
+}
+
+footer a {
+    color: #FFFFFF;
+}
+
+footer a:hover {
     color: #FFFFFF;
 }
 
