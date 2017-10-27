@@ -744,6 +744,29 @@ var main = (function () {
         return card;
     };
 
+    var loadComment = function (dom, id) {
+        dom.empty();
+        $.ajax.get({
+            url: path.api('/json/comment/' + id + '.json'),
+            success: function (data) {
+                data = JSON.parse(data);
+                if (data.status) for (var i = 0; i < data['data'].length; i++) {
+                    var c = $.createElement('a', {class: 'card markdown'});
+                    c.innerHTML = marked(
+                        '[' + data['data'][i]['name'] + '](mailto:' + data['data'][i]['email'] + ')\n\n' +
+                        new Date(data['data'][i]['time'] * 1000).toReadableFullString() + '\n\n---\n\n' +
+                        data['data'][i]['text'] + '\n\n'
+                    );
+                    dom.append(c)
+                }
+                else dom.append($.createElement('h3', '还没有评论'));
+            },
+            error: function () {
+                dom.append($.createElement('h3', '获取评论失败'));
+            }
+        })
+    };
+
     var randomRGB = function () {
         var x = [99], num = 0;
         while (24 < x.reduce(function (a, b) {
