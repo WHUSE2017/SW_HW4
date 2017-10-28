@@ -343,7 +343,7 @@ def api_post_add():
     x = None
     if request.form.get('tag'):
         for tag in request.form.get('tag').split(', '):
-            if tag not in app.config['site_config']['categories']:
+            if tag not in app.config['site_config']['tags']:
                 x = get_cursor().execute('INSERT INTO tag VALUES (?)', (tag,))
         if x:
             after_this_request(update_site_config)
@@ -365,7 +365,7 @@ def api_post_edit():
     x = None
     if request.form.get('tag'):
         for tag in request.form.get('tag').split(', '):
-            if tag not in app.config['site_config']['categories']:
+            if tag not in app.config['site_config']['tags']:
                 x = get_cursor().execute('INSERT INTO tag VALUES (?)', (tag,))
         if x:
             after_this_request(update_site_config)
