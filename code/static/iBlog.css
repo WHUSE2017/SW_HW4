@@ -363,13 +363,14 @@ aside #aside-block hr {
     margin: 1em 0;
 }
 
-aside #aside-block .tags, aside #aside-block .categories {
+/* ---------- 标签和分类 ---------- */
+.tags, .categories {
     font-size: 1rem;
-    display: inline-block;
     cursor: pointer;
 }
 
-aside #aside-block .tags {
+.tags {
+    display: inline-block;
     color: #FFFFFF;
     padding: .5rem;
     background: #666666;
@@ -377,21 +378,21 @@ aside #aside-block .tags {
     margin: .5rem .5rem .5rem 0;
 }
 
-aside #aside-block .tags:hover {
+.tags:hover {
     color: #666666;
     padding: .5rem;
     background: #FFFFFF;
     margin: .5rem .5rem .5rem 0;
 }
 
-aside #aside-block .categories {
+.categories {
     color: #000000;
     display: block;
     padding: 1rem 1rem 1rem 0;
 }
 
-aside #aside-block .categories:hover {
-    color: #FFFFFF;
+.categories:hover {
+    color: #000000;
 }
 
 /* ---------- 页尾 ---------- */
