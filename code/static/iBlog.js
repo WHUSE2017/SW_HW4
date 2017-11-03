@@ -275,7 +275,7 @@ var $ = (function () {
  * @type {{url, api}}
  */
 var path = (function () {
-    var genFn = function (rootPath) {
+    var enFn = function (rootPath) {
         if (typeof rootPath !== 'string') rootPath = '';
         return function (url) {
             if (typeof url !== 'string') url = '';
@@ -284,9 +284,23 @@ var path = (function () {
         };
     };
 
+    var deFn = function (rootPath) {
+        if (typeof rootPath !== 'string') rootPath = '';
+        if (!rootPath.search('//') || -1 < rootPath.search('://')) {
+            var match = rootPath.match(/\/\/.*?(\/.*$)/);
+            rootPath = match[1];
+        }
+        return function (path) {
+            if (typeof path !== 'string') path = '';
+            return !path.search(rootPath) ? path.slice(rootPath.length) : path;
+        }
+    };
+
     return {
-        api: genFn(window.iBlog['rootAPIPath']),
-        url: genFn(window.iBlog['rootStaticPath'])
+        api: enFn(window.iBlog['rootAPIPath']),
+        url: enFn(window.iBlog['rootStaticPath']),
+        deAPI: deFn(window.iBlog['rootAPIPath']),
+        deURL: deFn(window.iBlog['rootStaticPath'])
     }
 })();
 
@@ -474,18 +488,22 @@ var login = (function () {
             var dom = {};
             dom.login = $.createElement('section', {id: 'login'}).append(
                 $.createElement('section', {class: 'card'}).append(
-                    $.createElement('section', {class: 'editor'}).append(dom.username = $.createElement('input', {
-                        placeholder: '用户名',
-                        maxLength: 20
-                    })).append(dom.password = $.createElement('input', {
-                        type: 'password',
-                        placeholder: '密码',
-                        maxLength: 20
-                    })).append(dom.button = $.createElement('button', state ? '修改密码' : '登录')).append(dom.logout = $.createElement('button', '登出', {style: state ? 'display:block' : 'display:none'}))
+                    $.createElement('section', {class: 'editor'}).append(
+                        dom.username = $.createElement('input', {placeholder: '用户名', maxLength: 20})
+                    ).append(
+                        dom.password = $.createElement('input', {
+                            type: 'password',
+                            placeholder: '密码',
+                            maxLength: 20
+                        })
+                    ).append(
+                        dom.button = $.createElement('button', state ? '修改密码' : '登录')
+                    ).append(
+                        dom.logout = $.createElement('button', '登出', {style: state ? 'display:block' : 'display:none'})
+                    )
                 )
             );
             var hide = function () {
-                if (dom.login.parentNode !== $('body')) return false;
                 dom.login.css({top: '150%'});
                 dom.shadow.css({opacity: 0});
                 window.setTimeout(function () {
@@ -536,46 +554,52 @@ var login = (function () {
                 })
             });
             dom.shadow.addEventListener('click', hide);
-            $('body').append(dom.login.delay(30).css({top: '50%'})).append(dom.shadow.delay(30).css({opacity: 1}))
+            $('body').append(
+                dom.login.delay(30).css({top: '50%'})
+            ).append(
+                dom.shadow.delay(30).css({opacity: 1})
+            )
         }
     }
 })();
 var checkingLogin;
 
+/**
+ * 头部
+ * @type {{resetMain, resetSub, changeBackground, search}}
+ */
 var header = (function () {
-    // 创建 dom
-    (function () {
-        var user, search;
-        $('body').append($.createElement('header').append($.createElement('section', {
-            id: 'header-list'
-        }).append($.createElement('a', 'Home', {
-            class: 'header-list-left',
-            href: path.url('/')
-        })).append($.createElement('a', 'Message', {
-            class: 'header-list-left',
-            href: path.url('/message')
-        })).append($.createElement('a', 'toDoList', {
-            class: 'header-list-left',
-            href: path.url('/toDoList')
-        })).append(user = $.createElement('a', {
-            class: 'header-list-right fa fa-user-o'
-        })).append($.createElement('a', {
-            class: 'header-list-right fa fa-cog',
-            href: path.url('/admin/config')
-        })).append(search = $.createElement('a', {
-            class: 'header-list-right fa fa-search'
-        }))).append($.createElement('hr', {
-            id: 'header-hr'
-        })).append($.createElement('section', {
-            id: 'sub-title'
-        })).append($.createElement('section', {
-            id: 'starter'
-        })));
-
-        user.addEventListener('click', login.show);
-        search.addEventListener('click', function () {
-
-        });
+    // 搜索
+    var search = (function () {
+        var dom;
+        (function () {
+            var input, icon;
+            dom = $.createElement('section', {id: 'search'}).append(
+                input = $.createElement('input', {id: 'search-input', placeholder: '正文搜索'})
+            ).append(
+                icon = $.createElement('i', {id: 'search-icon', class: 'fa fa-search'})
+            );
+            input.addEventListener('keypress', function (event) {
+                if (event.keyCode !== 13) return;
+                if (!input.value.length) return new Notify('请输入搜索的内容').show();
+                handle('/search/' + input.value);
+                dom.css({top: '-4rem'});
+            })
+            icon.addEventListener('click', function () {
+                if (!input.value.length) return new Notify('请输入搜索的内容').show();
+                handle('/search/' + input.value);
+                dom.css({top: '-4rem'});
+            })
+        })();
+        return {
+            show: function () {
+                $('body').append(dom);
+                dom.delay(30).css({top: 0})
+            },
+            hide: function () {
+                dom.css({top: '-4rem'})
+            }
+        }
     })();
     // 背景
     var background = (function () {
@@ -631,13 +655,13 @@ var header = (function () {
         var timeout;
         // 创建 dom
         (function () {
-            $('body').append($.createElement('section', {
-                id: 'header'
-            }).append($.createElement('section', {
-                id: 'main-title'
-            }).append($.createElement('section', {
-                id: 'main-title-content'
-            }))));
+            $('body').append(
+                $.createElement('section', {id: 'header'}).append(
+                    $.createElement('section', {id: 'main-title'}).append(
+                        $.createElement('section', {id: 'main-title-content'})
+                    )
+                )
+            );
         })();
 
         /**
@@ -645,13 +669,17 @@ var header = (function () {
          */
         var getTitleWidth = function () {
             var width, x;
-            $('body').append(x = $.createElement('p', $('#main-title-content').innerText).css({
-                'font-size': '2rem',
-                'line-height': '4rem',
-                'position': 'fixed',
-                'top': '-9rem',
-                'white-space': 'nowrap'
-            })).remove((width = x.clientWidth, x));
+            $('body').append(
+                x = $.createElement('p', $('#main-title-content').innerText).css({
+                    'font-size': '2rem',
+                    'line-height': '4rem',
+                    'position': 'fixed',
+                    'top': '-9rem',
+                    'white-space': 'nowrap'
+                })
+            ).remove(
+                (width = x.clientWidth, x)
+            );
             return width;
         };
 
@@ -710,13 +738,51 @@ var header = (function () {
 
     })();
 
+    // 创建 dom
+    (function () {
+        var u, s;
+        $('body').append(
+            $.createElement('header').append(
+                $.createElement('section', {id: 'header-list'}).append(
+                    $.createElement('a', 'Home', {class: 'header-list-left', href: path.url('/')})
+                ).append(
+                    $.createElement('a', 'Publish', {class: 'header-list-left', href: path.url('/post/add')})
+                ).append(
+                    $.createElement('a', 'Message', {class: 'header-list-left', href: path.url('/message')})
+                ).append(
+                    $.createElement('a', 'toDoList', {class: 'header-list-left', href: path.url('/toDoList')})
+                ).append(
+                    u = $.createElement('a', {class: 'header-list-right fa fa-user-o'})
+                ).append(
+                    $.createElement('a', {class: 'header-list-right fa fa-cog', href: path.url('/admin/config')})
+                ).append(
+                    s = $.createElement('a', {class: 'header-list-right fa fa-search'})
+                )
+            ).append(
+                $.createElement('hr', {id: 'header-hr'})
+            ).append(
+                $.createElement('section', {id: 'sub-title'})
+            ).append(
+                $.createElement('section', {id: 'starter'})
+            )
+        );
+
+        u.addEventListener('click', login.show);
+        s.addEventListener('click', search.show);
+    })();
+
     return {
         resetMain: title.resetMain,
         resetSub: title.resetSub,
-        changeBackground: background
+        changeBackground: background,
+        search: search
     };
 })();
 
+/**
+ * 主区块
+ * @type {{writeList, writeArticle, writeEditor, writeConfig}}
+ */
 var main = (function () {
     // 创建 dom
     (function () {
@@ -742,7 +808,16 @@ var main = (function () {
             '#### ' + new Date(data['time'] * 1000).toReadableDateString();
 
         var card = $.createElement('a', {class: 'card markdown', href: path.url('/post/' + data['id'])});
-        card.innerHTML = marked(text);
+
+        var html = marked(text);
+        var imgs = html.match(/<img src="(.*?)"/g);
+        if (imgs) {
+            imgs = imgs.map(function (t) {
+                return t.slice(10, -1)
+            });
+            for (var r = 0; r < imgs.length; r++) html = html.replace(imgs[r], path.url(imgs[r]));
+        }
+        card.innerHTML = html;
         return card;
     };
 
@@ -797,11 +872,20 @@ var main = (function () {
                 data = JSON.parse(data);
                 if (data.status) for (var i = 0; i < data['data'].length; i++) {
                     var c = $.createElement('a', {class: 'card markdown'});
-                    c.innerHTML = marked(
+
+                    var html = marked(
                         '[' + data['data'][i]['name'] + '](mailto:' + data['data'][i]['email'] + ')\n\n' +
                         new Date(data['data'][i]['time'] * 1000).toReadableFullString() + '\n\n---\n\n' +
                         data['data'][i]['text'] + '\n\n'
                     );
+                    var imgs = html.match(/<img src="(.*?)"/g);
+                    if (imgs) {
+                        imgs = imgs.map(function (t) {
+                            return t.slice(10, -1)
+                        });
+                        for (var r = 0; r < imgs.length; r++) html = html.replace(imgs[r], path.url(imgs[r]));
+                    }
+                    c.innerHTML = html;
                     c.addEventListener('click', (function (uid) {
                         return function () {
                             if (!login.getState()) return;
@@ -848,7 +932,7 @@ var main = (function () {
     return {
         writeList: function (data, dataType) {
             $('body').className = '';
-            header.changeBackground(path.url('/static/u0.jpg'));
+            header.changeBackground('/static/u0.jpg');
             header.resetMain(config['siteName']);
             if (dataType['class'] === 'all') header.resetSub(
                 1 < dataType['page'] ? '第 ' + dataType['page'] + ' 页' : config['siteDescription']
@@ -885,7 +969,17 @@ var main = (function () {
             header.resetSub(new Date(data['time'] * 1000).toReadableFullString() + ' - ' + data['category']);
             var dom = $('#main-block').empty();
             var text = $.createElement('section', {class: 'markdown'});
-            text.innerHTML = marked(data['text']);
+
+
+            var html = marked(data['text']);
+            var imgs = html.match(/<img src="(.*?)"/g);
+            if (imgs) {
+                imgs = imgs.map(function (t) {
+                    return t.slice(10, -1)
+                });
+                for (var r = 0; r < imgs.length; r++) html = html.replace(imgs[r], path.url(imgs[r]));
+            }
+            text.innerHTML = html;
             dom.append(text);
             if (login.getState()) {
                 var del;
@@ -923,9 +1017,9 @@ var main = (function () {
             loadComment(comment, dataType['id']);
         },
         writeEditor: function (data, dataType) {
-            $('body').className = 'broad-main vertical';
+            $('body').className = 'hide-aside broad-main vertical';
             if (data && data['image']) header.changeBackground(data['image']);
-            else header.changeBackground(randomRGB());
+            else header.changeBackground('#223333');
             if (data) header.resetMain('编辑文章' + (data['title'] ? ' - ' + data['title'] : ''));
             else header.resetMain('添加新文章');
             header.resetSub('');
@@ -943,7 +1037,10 @@ var main = (function () {
                     }
                 };
                 var script = $.createElement('script', {src: path.url(window.iBlog['simpleMDEJS'])});
-                var style = $.createElement('link', {rel: 'stylesheet', href: path.url(window.iBlog['simpleMDECSS'])});
+                var style = $.createElement('link', {
+                    rel: 'stylesheet',
+                    href: path.url(window.iBlog['simpleMDECSS'])
+                });
                 script.addEventListener('load', onLoadFn);
                 style.addEventListener('load', onLoadFn);
                 $('head').append(script).append(style);
@@ -1175,6 +1272,10 @@ var main = (function () {
     }
 })();
 
+/**
+ * 侧栏
+ * @type {{setTagsCategories}}
+ */
 var aside = (function () {
     var dom;
     $('body').append($.createElement('aside').append(dom = $.createElement('section', {id: 'aside-block'})));
@@ -1197,7 +1298,10 @@ var aside = (function () {
             //         return typeof t !== 'string'
             //     })) return false;
             while (tags.length) (function (tag) {
-                $('#aside-block').insert(2, $.createElement('a', tag, {class: 'tags', href: path.url('/tag/' + tag)}));
+                $('#aside-block').insert(2, $.createElement('a', tag, {
+                    class: 'tags',
+                    href: path.url('/tag/' + tag)
+                }));
             })(tags.pop());
             while (categories.length) (function (category) {
                 $('#aside-block').append($.createElement('a', category, {
@@ -1209,6 +1313,10 @@ var aside = (function () {
     }
 })();
 
+/**
+ * 页脚
+ * @type {{copyright}}
+ */
 var footer = (function () {
     $('body').append($.createElement('footer', {id: 'footer'}));
 
@@ -1255,10 +1363,14 @@ var footer = (function () {
         var comPercent = 1 - percent;
 
         // 头部调整
-        if (window.pageYOffset) $('header')[0].class('opacity').css({'opacity': comPercent});
+        if (window.pageYOffset) {
+            $('header')[0].class('opacity').css({'opacity': comPercent});
+            header.search.hide();
+        }
         else $('header')[0].class().css({'opacity': comPercent});
         $('#main-title').css({'top': comPercent * 30 + '%'});
         $('#header').css({'top': comPercent * -4 + 'em'});
+
 
     };
 
@@ -1306,7 +1418,7 @@ var handle = (function () {
             dataType['page'] = p1;
         }
         else {
-            dataType['type'] = '404';
+            dataType = undefined;
         }
 
         return dataType;
@@ -1314,9 +1426,8 @@ var handle = (function () {
 
     var getDataType = function (pathname) {
 
-        if (typeof pathname !== 'string') pathname = location.pathname;
+        if (typeof pathname !== 'string') pathname = path.deURL(location.pathname);
         pathname = decodeURI(pathname);
-        if (!pathname.search(path.url())) pathname = pathname.slice(path.url().length);
 
         var match, dataType;
         if (pathname === '/') dataType = createDataType('list', 'all', 1);
@@ -1339,26 +1450,24 @@ var handle = (function () {
         else if (match = pathname.match(/^\/post\/edit\/(\d+)$/)) dataType = createDataType('edit', parseInt(match[1]));
 
         return dataType;
-
     };
 
     var handle = function (pathname, href) {
         if (href === location.href) return false;
-
         if (pathname === '') return false;
+        if (href && href.search(location.origin)) return window.open(href, '_blank');
+
+        pathname = path.deURL(pathname);
         var dataType = getDataType(pathname);
+        if (!dataType) return new Notify('不能处理这个请求').show();
 
-        if (!dataType) return window.open(href, '_blank');
         if (!history.pushState) return location.href = href;
-
         load(dataType, pathname);
-
     };
 
     handle.getDataType = getDataType;
 
     return handle;
-
 })();
 
 var config;
@@ -1397,7 +1506,6 @@ var load = (function () {
                         ((dataType['page'] - 1) * config['pageSize']) + '.' + config['pageSize'] + '.json'
                     ),
                     success: function (data) {
-                        locker.off();
                         data = JSON.parse(data);
                         if (!data.status && 1 < dataType['page']) {
                             locker.off();
@@ -1477,18 +1585,45 @@ var load = (function () {
             }, window.pageYOffset ? 1000 : 0);
         }
         else if (dataType['type'] === 'message') {
-            if (pathname) history.pushState(dataType, '', path.url(pathname));
-            header.resetMain('Message');
-            header.resetSub('正在开发');
-            $('#main-block').empty();
-            locker.off();
+            $.ajax.get({
+                url: path.api('/json/message/' + ((dataType['page'] - 1) * 20) + '.' + 20 + '.json'),
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (!data.status && 1 < dataType['page']) {
+                        locker.off();
+                        new Notify('没有更多文章了').show();
+                    } else {
+                        $.scroll(0, window.pageYOffset ? 1000 : 0);
+                        setTimeout(function () {
+                            locker.off();
+                            if (pathname) history.pushState(dataType, '', path.url(pathname));
+                            main.writeMessage(data.status ? data['data'] : [], dataType, data['length']);
+                        }, window.pageYOffset ? 1000 : 0);
+                    }
+                },
+                error: function () {
+                    locker.off();
+                    new Notify('网络错误').show();
+                }
+            })
         }
         else if (dataType['type'] === 'toDoList') {
-            if (pathname) history.pushState(dataType, '', path.url(pathname));
-            header.resetMain('toDoList');
-            header.resetSub('正在开发');
-            $('#main-block').empty();
-            locker.off();
+            $.ajax.get({
+                url: path.api('/json/toDoList/all.json'),
+                success: function (data) {
+                    data = JSON.parse(data);
+                    $.scroll(0, window.pageYOffset ? 1000 : 0);
+                    setTimeout(function () {
+                        locker.off();
+                        if (pathname) history.pushState(dataType, '', path.url(pathname));
+                        main.writeToDoList(data.status ? data['data'] : [], dataType);
+                    }, window.pageYOffset ? 1000 : 0);
+                },
+                error: function () {
+                    locker.off();
+                    new Notify('网络错误').show();
+                }
+            })
         }
         else if (dataType['type'] === 'userManage') {
             if (pathname) history.pushState(dataType, '', path.url(pathname));
@@ -1501,9 +1636,7 @@ var load = (function () {
 
     load.getConfig = getConfig;
     return load
-
 })();
-
 
 /**
  * 主函数区域
