@@ -1,6 +1,8 @@
 import re
 import sqlite3
+import threading
 import time
+import spider
 from json import dumps
 
 from flask import Flask, g, session, request
@@ -353,7 +355,8 @@ def api_post_add():
 @app.route('/admin/post/edit', methods=['POST'])
 def api_post_edit():
     if not session.get('login') or \
-            not request.form.get('time') or not request.form.get('category') or not request.form.get('text'):
+            not request.form.get('time') or not request.form.get('category') or \
+            not request.form.get('text') or not request.form.get('id'):
         return boolean_response(False)
     get_cursor().execute(
         'UPDATE post SET time = ?, title = ?, category = ?, tag = ?, image = ?, text = ? WHERE id = ?',
@@ -380,5 +383,123 @@ def api_post_delete():
     return boolean_response(True)
 
 
+@app.route('/json/toDoList/<int:start_num>.<int:limit_num>.json')
+@app.route('/json/toDoList/all.json')
+def api_to_do_list(*args, **kwargs):
+    result = {'status': False}
+    cursor = get_cursor()
+    if 'start_num' in kwargs:
+        cursor.execute(
+            'SELECT * FROM toDoList ORDER BY time DESC LIMIT ?, ?',
+            (kwargs['start_num'], kwargs['limit_num'])
+        )
+    else:
+        cursor.execute('SELECT * FROM toDoList ORDER BY time DESC')
+    to_do_lists = cursor.fetchall()
+    if to_do_lists:
+        result['status'] = True
+        data = []
+        for to_do_list in to_do_lists:
+            data.append({
+                'id': to_do_list['id'],
+                'time': to_do_list['time'],
+                'checked': to_do_list['checked'],
+                'text': to_do_list['text']
+            })
+        result['data'] = data
+    return dumps(result, ensure_ascii=False) + '\n'
+
+
+@app.route('/admin/toDoList/add', methods=['POST'])
+def api_to_do_list_add():
+    if not session.get('login') or not request.form.get('time') or not request.form.get('text'):
+        return boolean_response(False)
+    get_cursor().execute(
+        'INSERT INTO toDoList (time, checked, text) VALUES (?, 0, ?)',
+        (request.form.get('time'), request.form.get('text'))
+    )
+    return boolean_response(True)
+
+
+@app.route('/admin/toDoList/edit', methods=['POST'])
+def api_to_do_list_edit():
+    if not session.get('login') or \
+            not request.form.get('time') or not request.form.get('text') or not request.form.get('id'):
+        return boolean_response(False)
+    get_cursor().execute(
+        'UPDATE toDoList SET time = ?, text = ? WHERE id = ?',
+        (request.form.get('time'), request.form.get('text'), request.form.get('id'))
+    )
+    return boolean_response(True)
+
+
+@app.route('/admin/toDoList/checked', methods=['POST'])
+def api_to_do_list_checked():
+    if not session.get('login') or \
+            not request.form.get('checked') or not request.form.get('id'):
+        return boolean_response(False)
+    get_cursor().execute(
+        'UPDATE toDoList SET checked = ? WHERE id = ?',
+        (request.form.get('checked'), request.form.get('id'))
+    )
+    return boolean_response(True)
+
+
+@app.route('/admin/toDoList/delete', methods=['POST'])
+def api_to_do_list_delete():
+    if not session.get('login') or not request.form.get('id'):
+        return boolean_response(False)
+    get_cursor().execute('DELETE FROM toDoList WHERE id = ?', (request.form.get('id'),))
+    return boolean_response(True)
+
+
+@app.route('/json/message/<int:start_num>.<int:limit_num>.json')
+def api_message_list(*args, **kwargs):
+    result = {'status': False}
+    messages = get_cursor().execute(
+        'SELECT * FROM message ORDER BY time DESC LIMIT ?, ?',
+        (kwargs['start_num'], kwargs['limit_num'])
+    ).fetchall()
+    if messages:
+        result['status'] = True
+        result['length'] = len(get_cursor().execute('SELECT id FROM message').fetchall())
+        data = []
+        for message in messages:
+            data.append({
+                'id': message['id'],
+                'url': message['url'],
+                'time': message['time'],
+                'title': message['title'],
+                'read': message['read']
+            })
+        result['data'] = data
+    return dumps(result, ensure_ascii=False) + '\n'
+
+
+@app.route('/admin/message/read', methods=['POST'])
+def api_message_read():
+    if not session.get('login') or not request.form.get('id'):
+        return boolean_response(False)
+    get_cursor().execute(
+        'UPDATE message SET read=1 WHERE id = ?',
+        (request.form.get('id'), )
+    )
+    return boolean_response(True)
+
+
+def spider_thread():
+    print('Spider thread is running...')
+    while True:
+        try:
+            print('Spider is fetching...')
+            spider.main()
+            print('Spider fetched...')
+        except Exception:
+            pass
+        time.sleep(7200)
+
+
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', debug=True)
+    t = threading.Thread(target=spider_thread)
+    t.start()
+    app.run(host='0.0.0.0')
