@@ -30,4 +30,19 @@ CREATE TABLE comment (
     email nvarchar(30),
     text ntext
 );
+DROP TABLE IF EXISTS toDoList;
+CREATE TABLE toDoList (
+    id integer PRIMARY KEY autoincrement,
+    time int(10),
+    checked int(1),
+    text ntext
+);
+DROP TABLE IF EXISTS message;
+CREATE TABLE message (
+    id integer PRIMARY KEY autoincrement,
+    read int(1),
+    time int(10),
+    url nvarchar(100),
+    title nvarchar(50)
+);
 
