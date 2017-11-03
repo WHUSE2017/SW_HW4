@@ -1426,6 +1426,95 @@ var main = (function () {
                 if (!login.getState()) return login.show();
                 write(dom, data);
             };
+        })(),
+        writeMessage: (function () {
+            var write = function (dom, data, dataType, length) {
+                dom.empty();
+                if (!data.length) return dom.append(
+                    $.createElement('h3', '还没有内容')
+                );
+                for (var i = 0; i < data.length; i++) {
+                    var a, bookmark;
+                    dom.append(
+                        a = $.createElement('a', {
+                            target: '_blank',
+                            href: data[i]['url'],
+                            class: 'card' + (data[i]['read'] ? ' message-read' : ' message')
+                        }).append(
+                            $.createElement('section', {class: 'markdown'}).append(
+                                $.createElement('h3', data[i]['title']).insert(
+                                    0, bookmark = $.createElement('i', {class: 'fa fa-bookmark'})
+                                )
+                            ).append(
+                                $.createElement('hr')
+                            ).append(
+                                $.createElement('time', new Date(data[i]['time'] * 1000).toReadableDateString())
+                            )
+                        )
+                    );
+                    bookmark.addEventListener('click', (function (i) {
+                        return function (event) {
+                            event.preventDefault();
+                            $.ajax.post({
+                                url: path.api('/admin/toDoList/add'),
+                                data: {
+                                    time: new Date().toUnixStamp(),
+                                    text: data[i]['title'] + '\n\n' + data[i]['url']
+                                },
+                                success: function (data) {
+                                    if (JSON.parse(data).status) new Notify('已经保存到待办事项').show();
+                                    else new Notify('服务器出了点问题').show();
+                                },
+                                error: function () {
+                                    new Notify('网络错误').show();
+                                }
+                            })
+                        }
+                    })(i));
+                    a.addEventListener('click', (function (i) {
+                        return function () {
+                            data[i]['read'] = 1;
+                            write(dom, data, dataType, length);
+                            $.ajax.post({
+                                url: path.api('/admin/message/read'),
+                                data: {
+                                    id: data[i]['id']
+                                }
+                            })
+                        }
+                    })(i))
+                }
+
+                var nav = $.createElement('section', {id: 'nav'});
+                var select = $.createElement('select');
+
+                for (i = 1; i <= Math.ceil(length / 20); i++)
+                    select.append($.createElement('option', '第 ' + i + ' 页', {value: i}))
+                select.value = dataType['page'];
+                select.addEventListener('change', function () {
+                    handle(path.url('/message/page/' + select.value), location.origin + path.url('/message/page/' + select.value))
+                });
+                if (1 < dataType['page']) nav.append($.createElement('a', '上一页', {
+                    id: 'nav-pre',
+                    href: path.url('/message/page/' + (dataType['page'] - 1))
+                }));
+                nav.append(select);
+                if (dataType['page'] < Math.ceil(length / 20)) nav.append($.createElement('a', '下一页', {
+                    id: 'nav-next',
+                    href: path.url('/message/page/' + (dataType['page'] + 1))
+                }));
+                dom.append(nav);
+            };
+
+            return function (data, dataType, length) {
+                var dom = $('#main-block').empty();
+                header.changeBackground('#223333');
+                $('body').className = 'vertical hide-aside';
+                header.resetMain('Message');
+                header.resetSub('第 ' + dataType['page'] + ' 页');
+                if (!login.getState()) return login.show();
+                write(dom, data, dataType, length)
+            };
         })()
     }
 })();
