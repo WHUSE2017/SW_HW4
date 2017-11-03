@@ -222,6 +222,48 @@ header #starter {
     z-index: 8;
 }
 
+/* ---------- toDoList ---------- */
+.edit-to-do-list {
+    width: 20em;
+    height: 28em;
+    position: fixed;
+    margin-top: -14em;
+    margin-left: -10em;
+    top: 150%;
+    left: 50%;
+    z-index: 8;
+}
+
+.to-do-lists-middle, .to-do-lists, .to-do-lists-finished {
+    word-wrap: break-word;
+    padding-top: .8em !important;
+    padding-bottom: .8em !important;
+}
+
+.to-do-lists-middle {
+    text-align: center;
+}
+
+.to-do-lists *, .to-do-lists-finished * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.to-do-lists span, .to-do-lists-finished span {
+    width: calc(100% - 8em);
+    padding: 0 1em;
+}
+
+.to-do-lists-finished span {
+    color: #aaaaaa;
+    text-decoration: line-through;
+}
+
+.to-do-lists .fa, .to-do-lists-finished .fa {
+    font-size: 1.5em;
+    margin-left: .5em;
+}
+
 /* ---------- 主区块 ---------- */
 .vertical main {
     display: block;
@@ -349,6 +391,15 @@ main #main-block {
     border-top: 3px solid #aaaaaa;
     margin-top: 2em;
     padding-top: 2em;
+}
+
+/* message */
+.message-read .fa, .message .fa {
+    margin-right: .5em;
+}
+
+.message-read * {
+    color: #aaaaaa !important;
 }
 
 /* ---------- 侧栏 ---------- */
