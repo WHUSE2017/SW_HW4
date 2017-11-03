@@ -929,6 +929,65 @@ var main = (function () {
         return '#' + ((num > 0xF) ? ((num > 0xFF) ? '' : '0') : '00') + num.toString(16);
     };
 
+    var showToDoListEditor = (function () {
+        var dom = {};
+
+        var hide = function () {
+            dom.addToDoList.css({top: '150%'});
+            dom.shadow.css({opacity: 0});
+            window.setTimeout(function () {
+                $('body').remove(dom.addToDoList).remove(dom.shadow);
+            }, 500)
+        };
+
+        return function (id, time, text) {
+            id = typeof id === 'number' ? id : undefined;
+            dom.addToDoList = $.createElement('section', {class: 'edit-to-do-list'}).append(
+                $.createElement('section', {class: 'card'}).append(
+                    $.createElement('section', {class: 'editor'}).append(
+                        dom.time = $.createElement('input', {type: 'datetime-local'})
+                    ).append(
+                        dom.text = $.createElement('textarea', {placeholder: '内容'})
+                    ).append(
+                        dom.button = $.createElement('button', '保存')
+                    )
+                )
+            );
+            dom.time.value = (time ? new Date(time * 1000) : new Date()).toInputBoxValue();
+            dom.text.value = text ? text : '';
+            dom.shadow = $.createElement('section', {class: 'shadow'});
+            dom.button.addEventListener('click', function () {
+                if (dom.text.value === '') return new Notify('请输入内容').show();
+                $.ajax.post({
+                    url: path.api(id ? '/admin/toDoList/edit' : '/admin/toDoList/add'),
+                    data: {
+                        time: dom.time.value.toDateFromInputBox().toUnixStamp(),
+                        text: dom.text.value,
+                        id: id ? id : ''
+                    },
+                    success: function (data) {
+                        if (JSON.parse(data).status) {
+                            new Notify('成功').show();
+                            hide();
+                            load();
+                        } else {
+                            new Notify('出现了未知错误').show();
+                        }
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+            dom.shadow.addEventListener('click', hide);
+            $('body').append(
+                dom.addToDoList.delay(30).css({top: '50%'})
+            ).append(
+                dom.shadow.delay(30).css({opacity: 1})
+            )
+        }
+    })();
+
     return {
         writeList: function (data, dataType) {
             $('body').className = '';
@@ -1268,7 +1327,106 @@ var main = (function () {
                 })
             });
             dom.append(card);
-        }
+        },
+        writeToDoList: (function () {
+            var write = (function () {
+
+                return function (dom, data) {
+                    dom.empty();
+                    var add, check, checked, show;
+                    dom.append(add = $.createElement('section', '+ 添加任务', {class: 'card to-do-lists-middle'}));
+                    add.addEventListener('click', showToDoListEditor);
+                    if (!data.length) return dom.append($.createElement('h3', '还没有内容')), undefined;
+                    dom.append(check = $.createElement('section'));
+                    dom.append(show = $.createElement('section', '显示已完成', {class: 'card to-do-lists-middle'}));
+                    show.addEventListener('click', function () {
+                        show.css({display: 'none'});
+                        checked.css({display: 'block'})
+                    });
+                    dom.append(checked = $.createElement('section').css({display: 'none'}));
+                    for (var i = 0; i < data.length; i++) {
+                        var checkbox, section, edit, del;
+                        section = $.createElement('section', {
+                            class: data[i]['checked'] ? 'card to-do-lists-finished' : 'card to-do-lists'
+                        }).append(
+                            checkbox = $.createElement('input', {type: 'checkbox'})
+                        ).append(
+                            $.createElement('span', data[i]['text'])
+                        ).append(
+                            del = $.createElement('i', {class: 'fa fa-trash to-do-lists-delete-icon'})
+                        ).append(
+                            edit = $.createElement('i', {class: 'fa fa-edit to-do-lists-edit-icon'})
+                        );
+                        if (data[i]['checked']) {
+                            checked.append(section);
+                            checkbox.checked = true;
+                        }
+                        else check.append(section);
+                        edit.addEventListener('click', (function (i) {
+                            return function () {
+                                showToDoListEditor(data[i]['id'], data[i]['time'], data[i]['text'])
+                            }
+                        })(i));
+                        del.addEventListener('click', (function (i) {
+                            return function () {
+                                if (confirm('真的要删除吗?')) $.ajax.post({
+                                    url: path.api('/admin/toDoList/delete'),
+                                    data: {
+                                        id: data[i]['id']
+                                    },
+                                    success: function (data) {
+                                        if (JSON.parse(data).status) {
+                                            new Notify('成功').show();
+                                            load();
+                                        } else new Notify('服务器错误').show();
+                                    },
+                                    error: function () {
+                                        new Notify('网络错误').show();
+                                    }
+                                })
+                            }
+                        })(i));
+                        checkbox.addEventListener('click', (function (id, checkbox, rank) {
+                            return function () {
+                                locker.on();
+                                $.ajax.post({
+                                    url: path.api('/admin/toDoList/checked'),
+                                    data: {
+                                        id: id,
+                                        checked: 0 + checkbox.checked
+                                    },
+                                    success: function (d) {
+                                        locker.off();
+                                        if (JSON.parse(d).status) {
+                                            data[rank]['checked'] = !data[rank]['checked'];
+                                            write(dom, data);
+                                        } else new Notify('未知错误').show()
+                                    },
+                                    error: function () {
+                                        locker.off();
+                                        new Notify('网络错误').show()
+                                    }
+                                })
+                            }
+                        })(data[i]['id'], checkbox, i));
+                        section.addEventListener('click', (function (id) {
+
+                        })(data[i]['id']))
+                    }
+
+                }
+            })();
+
+            return function (data, dataType) {
+                var dom = $('#main-block').empty();
+                header.changeBackground('#223333');
+                $('body').className = 'vertical hide-aside';
+                header.resetMain('toDoList');
+                header.resetSub('');
+                if (!login.getState()) return login.show();
+                write(dom, data);
+            };
+        })()
     }
 })();
 
