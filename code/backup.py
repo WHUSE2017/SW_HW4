@@ -26,7 +26,8 @@ data = {
     'post': get_data_from_database('post', ['id', 'time', 'title', 'category', 'tag', 'image', 'text']),
     'comment': get_data_from_database('comment', ['id', 'uid', 'time', 'name', 'email', 'text']),
     'toDoList': get_data_from_database('toDoList', ['id', 'time', 'text', 'checked']),
-    'message': get_data_from_database('message', ['id', 'read', 'time', 'title', 'url'])
+    'message': get_data_from_database('message', ['id', 'read', 'time', 'title', 'url']),
+    'user': get_data_from_database('user', ['id', 'time', 'author', 'name', 'school', 'number', 'other'])
 }
 
 with open('database/backup.json', 'w', encoding='utf8') as f:

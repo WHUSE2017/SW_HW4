@@ -45,4 +45,13 @@ CREATE TABLE message (
     url nvarchar(100),
     title nvarchar(50)
 );
-
+DROP TABLE IF EXISTS user;
+CREATE TABLE user (
+    id integer PRIMARY KEY autoincrement,
+    time int(10),
+    author int(1),
+    name nvarchar(100),
+    school nvarchar(100),
+    number nvarchar(100),
+    other nvarchar(100)
+);
