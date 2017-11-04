@@ -455,6 +455,8 @@ def api_to_do_list_delete():
 
 @app.route('/json/message/<int:start_num>.<int:limit_num>.json')
 def api_message_list(*args, **kwargs):
+    if not session.get('login') and not session.get('guest'):
+        return boolean_response(False)
     result = {'status': False}
     messages = get_cursor().execute(
         'SELECT * FROM message ORDER BY time DESC LIMIT ?, ?',
@@ -480,11 +482,28 @@ def api_message_list(*args, **kwargs):
 def api_message_read():
     if not session.get('login') or not request.form.get('id'):
         return boolean_response(False)
-    get_cursor().execute(
-        'UPDATE message SET read=1 WHERE id = ?',
-        (request.form.get('id'), )
-    )
+    get_cursor().execute('UPDATE message SET read=1 WHERE id = ?', (request.form.get('id'),))
     return boolean_response(True)
+
+
+@app.route('/user/author', methods=['POST'])
+def api_user_author():
+    if not request.form.get('name') or not request.form.get('school') or not request.form.get('number'):
+        return boolean_response(False)
+    user = get_cursor().execute(
+        'SELECT * FROM user WHERE name=? AND school=? AND number=?',
+        (request.form.get('name'), request.form.get('school'), request.form.get('number'))
+    ).fetchone()
+    if user:
+        session['guest'] = user['author']
+        return boolean_response(user['author'])
+    session['guest'] = 0
+    get_cursor().execute(
+        'INSERT INTO user (time, name, school, number, other, author) VALUES (?, ?, ?, ?, ?, 0)',
+        (int(time.time()), request.form.get('name'), request.form.get('school'),
+         request.form.get('number'), request.form.get('other'))
+    )
+    return boolean_response(False)
 
 
 def spider_thread():
