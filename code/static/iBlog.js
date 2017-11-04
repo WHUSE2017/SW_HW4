@@ -1553,6 +1553,93 @@ var main = (function () {
                 }
                 write(dom, data, dataType, length)
             };
+        })(),
+        writeUserManage: (function () {
+            return function (data, dataType) {
+                $('body').className = 'vertical hide-aside';
+                header.changeBackground('#223333');
+                header.resetMain(document.title = '用户管理');
+                header.resetSub('');
+                var dom = $('#main-block').empty();
+                if (!login.getState()) {
+                    dom.append($.createElement('h3', '抱歉, 您还没有登录'));
+                    return login.show();
+                }
+                if (!data.length) return dom.append(
+                    $.createElement('h3', '还没有待认证的用户')
+                );
+                for (var i = 0; i < data.length; i++) {
+                    var info, section, author, del;
+                    section = $.createElement('section', {class: 'card user-manage'}).append(
+                        info = $.createElement('span', data[i]['name'])
+                    ).append(
+                        del = $.createElement('i', {class: 'fa fa-trash'})
+                    ).append(
+                        author = $.createElement('i', {
+                            class: 'fa ' + (data[i]['author'] ? 'fa-check' : 'fa-square-o')
+                        })
+                    );
+                    info.addEventListener('click', (function (i, info) {
+                        return function () {
+                            info.innerText =
+                                data[i]['name'] + '\n\n' +
+                                data[i]['school'] + '\n\n' +
+                                data[i]['number'] +
+                                (data[i]['other'].length ? '\n\n' + data[i]['other'] : '')
+                        }
+                    })(i, info));
+                    author.addEventListener('click', (function (i, author) {
+                        return function () {
+                            if (!data[i]['author']) $.ajax.post({
+                                url: path.api('/admin/user/manage/author'),
+                                data: {
+                                    id: data[i]['id']
+                                },
+                                success: function (d) {
+                                    if (JSON.parse(d).status) {
+                                        new Notify('成功').show();
+                                        data[i]['author'] = 1;
+                                        author.class('fa', 'fa-check')
+                                    } else new Notify('服务器错误').show();
+                                },
+                                error: function () {
+                                    new Notify('网络错误').show();
+                                }
+                            })
+                        }
+                    })(i, author));
+                    del.addEventListener('click', (function (i) {
+                        return function () {
+                            if (confirm('真的要删除吗?')) $.ajax.post({
+                                url: path.api('/admin/user/manage/delete'),
+                                data: {
+                                    id: data[i]['id']
+                                },
+                                success: function (data) {
+                                    if (JSON.parse(data).status) {
+                                        new Notify('成功').show();
+                                        load();
+                                    } else new Notify('服务器错误').show();
+                                },
+                                error: function () {
+                                    new Notify('网络错误').show();
+                                }
+                            })
+                        }
+                    })(i));
+                    dom.append(section)
+                }
+                var nav = $.createElement('section', {id: 'nav'});
+                if (1 < dataType['page']) nav.append($.createElement('a', '上一页', {
+                    id: 'nav-pre',
+                    href: path.url('/admin/user/manage/page/') + (dataType['page'] - 1)
+                }));
+                nav.append($.createElement('a', '下一页', {
+                    id: 'nav-next',
+                    href: path.url('/admin/user/manage/page/') + (dataType['page'] + 1)
+                }));
+                dom.append(nav);
+            }
         })()
     }
 })();
@@ -1968,6 +2055,30 @@ var load = (function () {
             })
         }
         else if (dataType['type'] === 'userManage') {
+            $.ajax.get({
+                url: path.api(
+                    '/admin/user/manage/' +
+                    ((dataType['page'] - 1) * 10) + '.' + 10 + '.json'
+                ),
+                success: function (data) {
+                    data = JSON.parse(data);
+                    if (!data.status && 1 < dataType['page']) {
+                        locker.off();
+                        new Notify('没有更多用户了').show();
+                    } else {
+                        $.scroll(0, window.pageYOffset ? 1000 : 0);
+                        setTimeout(function () {
+                            locker.off();
+                            if (pathname) history.pushState(dataType, '', path.url(pathname));
+                            main.writeUserManage(data.status ? data['data'] : [], dataType);
+                        }, window.pageYOffset ? 1000 : 0);
+                    }
+                },
+                error: function () {
+                    locker.off();
+                    new Notify('网络错误').show();
+                }
+            });
         }
     };
 
