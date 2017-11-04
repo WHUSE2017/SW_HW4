@@ -45,15 +45,15 @@ a:hover, a:active {
 
 .notification {
     opacity: 0;
-    height: 2em;
+    height: 2rem;
     width: 100%;
-    font-size: 1.2em;
-    line-height: 2em;
+    font-size: 1.2rem;
+    line-height: 2rem;
     text-align: center;
     background: #fff;
     border: 1px solid #fff;
     position: fixed;
-    bottom: -2em;
+    bottom: -2rem;
     left: 0;
     z-index: 7
 }
@@ -102,7 +102,7 @@ header #header-list {
 header .header-list-left, header .header-list-right {
     cursor: pointer;
     color: #ffffff;
-    font-size: 1.2em;
+    font-size: 1.2rem;
     line-height: 1.5rem;
     margin: 0 .3rem;
 }
@@ -166,7 +166,7 @@ header #starter {
     top: -4rem;
     left: 0;
     transition: all 0s;
-    z-index: 9;
+    z-index: 5;
 }
 
 #header #main-title {
@@ -187,36 +187,51 @@ header #starter {
 /* ---------- 搜索框 ---------- */
 #search {
     position: fixed;
-    top: -4em;
-    height: 4em;
-    width: calc(100% - 4em);
-    margin: 0 2em;
+    top: -4rem;
+    height: 4rem;
+    width: calc(100% - 4rem);
+    margin: 0 2rem;
 }
 
 #search #search-input {
-    width: calc(100% - 2em);
-    margin: 1em 0;
-    padding: 0 1em;
-    font-size: 1em;
-    line-height: 2em;
+    width: calc(100% - 2rem);
+    margin: 1rem 0;
+    padding: 0 1rem;
+    font-size: 1rem;
+    line-height: 2rem;
     border: 1px solid #eee;
-    border-radius: .25em;
+    border-radius: .25rem;
 }
 
 #search #search-icon {
-    font-size: 1.2em;
+    font-size: 1.2rem;
     position: absolute;
-    right: .5em;
-    top: 1.2em;
+    right: .5rem;
+    top: 1.4rem;
+}
+
+/* ---------- 用户认证 ---------- */
+#user-author {
+    width: 20rem;
+    height: 30rem;
+    position: fixed;
+    margin-top: -15rem;
+    margin-left: -10rem;
+    top: 150%;
+    left: 50%;
+    z-index: 8;
+}
+#user-author .editor textarea {
+    min-height: 8rem;
 }
 
 /* ---------- 登录 ---------- */
 #login {
-    width: 20em;
-    height: 15em;
+    width: 20rem;
+    height: 20rem;
     position: fixed;
-    margin-top: -7.5em;
-    margin-left: -10em;
+    margin-top: -10rem;
+    margin-left: -10rem;
     top: 150%;
     left: 50%;
     z-index: 8;
@@ -224,11 +239,11 @@ header #starter {
 
 /* ---------- toDoList ---------- */
 .edit-to-do-list {
-    width: 20em;
-    height: 28em;
+    width: 20rem;
+    height: 28rem;
     position: fixed;
-    margin-top: -14em;
-    margin-left: -10em;
+    margin-top: -14rem;
+    margin-left: -10rem;
     top: 150%;
     left: 50%;
     z-index: 8;
@@ -236,8 +251,8 @@ header #starter {
 
 .to-do-lists-middle, .to-do-lists, .to-do-lists-finished {
     word-wrap: break-word;
-    padding-top: .8em !important;
-    padding-bottom: .8em !important;
+    padding-top: .8rem !important;
+    padding-bottom: .8rem !important;
 }
 
 .to-do-lists-middle {
@@ -250,8 +265,8 @@ header #starter {
 }
 
 .to-do-lists span, .to-do-lists-finished span {
-    width: calc(100% - 8em);
-    padding: 0 1em;
+    width: calc(100% - 8rem);
+    padding: 0 1rem;
 }
 
 .to-do-lists-finished span {
@@ -260,8 +275,31 @@ header #starter {
 }
 
 .to-do-lists .fa, .to-do-lists-finished .fa {
-    font-size: 1.5em;
-    margin-left: .5em;
+    font-size: 1.5rem;
+    margin-left: .5rem;
+}
+
+/* ---------- userManage ---------- */
+
+.user-manage {
+    word-wrap: break-word;
+    padding-top: .8rem !important;
+    padding-bottom: .8rem !important;
+}
+
+.user-manage * {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.user-manage span {
+    width: calc(100% - 7rem);
+    padding: 0 1rem;
+}
+
+.user-manage .fa {
+    font-size: 1.5rem;
+    margin-left: .5rem;
 }
 
 /* ---------- 主区块 ---------- */
@@ -275,21 +313,21 @@ header #starter {
 }
 
 .vertical main #main-block {
-    margin: 0 auto 2em;
+    margin: 0 auto 2rem;
     width: 35%;
 }
 
 main {
-    min-height: calc(100% - 6em);
+    min-height: calc(100% - 6rem);
     display: inline-block;
     vertical-align: top;
-    margin-top: 2em;
+    margin-top: 2rem;
     width: 60%;
 }
 
 main #main-block {
     width: 50%;
-    margin: 0 2em 2em auto;
+    margin: 0 2rem 2rem auto;
 }
 
 /* 文章列表的卡片 */
@@ -318,7 +356,7 @@ main #main-block {
 
 /* 文章的编辑删除按钮 */
 #article-admin {
-    margin: 1em 0;
+    margin: 1rem 0;
 }
 
 #article-admin #article-edit, #article-admin #article-delete {
@@ -359,7 +397,11 @@ main #main-block {
     color: #000000;
     font-size: 1.2rem;
     line-height: 2rem;
-    margin: 0 1em;
+    margin: 0 1rem;
+}
+
+#nav select {
+    font-size: 1.1rem;
 }
 
 /* 通用的编辑器样式 */
@@ -368,18 +410,18 @@ main #main-block {
 }
 
 .editor input, .editor select, .editor textarea, .editor button {
-    width: calc(100% - 2em);
-    height: 2em;
-    margin: 1em 0;
-    padding: 0 1em;
-    font-size: 1em;
-    line-height: 2em;
+    width: calc(100% - 2rem);
+    height: 2rem;
+    margin: 1rem 0;
+    padding: 0 1rem;
+    font-size: 1rem;
+    line-height: 2rem;
     border: 1px solid #eee;
-    border-radius: .25em;
+    border-radius: .25rem;
 }
 
 .editor textarea {
-    min-height: 15em;
+    min-height: 15rem;
 }
 
 .editor button, .editor select {
@@ -389,13 +431,13 @@ main #main-block {
 /* 评论块 */
 #comment {
     border-top: 3px solid #aaaaaa;
-    margin-top: 2em;
-    padding-top: 2em;
+    margin-top: 2rem;
+    padding-top: 2rem;
 }
 
 /* message */
 .message-read .fa, .message .fa {
-    margin-right: .5em;
+    margin-right: .5rem;
 }
 
 .message-read * {
@@ -413,7 +455,7 @@ main #main-block {
     background: #223333;
     color: #FFFFFF;
     border-left: none;
-    padding: 2em 0 1em;
+    padding: 2rem 0 1rem;
 }
 
 .vertical aside #aside-block {
@@ -433,14 +475,14 @@ aside {
     display: inline-block;
     vertical-align: top;
     width: 38%;
-    margin-top: 2em;
+    margin-top: 2rem;
     transition: all 0s;
     border-left: 1px solid #999999;
 }
 
 aside #aside-block {
     width: 50%;
-    margin: 0 0 2em 2em;
+    margin: 0 0 2rem 2rem;
 }
 
 aside #aside-block .aside-title {
@@ -449,7 +491,7 @@ aside #aside-block .aside-title {
 }
 
 aside #aside-block hr {
-    margin: 1em 0;
+    margin: 1rem 0;
 }
 
 /* ---------- 标签和分类 ---------- */
@@ -515,7 +557,7 @@ footer a:hover {
     opacity: 0;
     position: fixed;
     top: 100%;
-    left: calc(50% - 3.5em);
+    left: calc(50% - 3.5rem);
     border: .5rem solid;
     border-radius: 999rem;
     animation: loading 2s infinite;
@@ -550,10 +592,10 @@ footer a:hover {
 
 @keyframes loading {
     10% {
-        margin-top: .5em;
+        margin-top: .5rem;
     }
     30% {
-        margin-top: -.5em;
+        margin-top: -.5rem;
     }
     60% {
         margin-top: 0;
@@ -626,7 +668,7 @@ footer a:hover {
         background: #223333;
         color: #FFFFFF;
         border-left: none;
-        padding: 2em 0 1em;
+        padding: 2rem 0 1rem;
     }
 
     aside #aside-block {
