@@ -499,7 +499,9 @@ var login = (function () {
                     ).append(
                         dom.button = $.createElement('button', state ? '修改密码' : '登录')
                     ).append(
-                        dom.logout = $.createElement('button', '登出', {style: state ? 'display:block' : 'display:none'})
+                        dom.button1 = $.createElement('button', state ? '登出' : '访客认证')
+                    ).append(
+                        dom.button2 = $.createElement('button', '用户管理').css({display: state ? 'block' : 'none'})
                     )
                 )
             );
@@ -535,8 +537,8 @@ var login = (function () {
                     }
                 })
             });
-            dom.logout.addEventListener('click', function () {
-                $.ajax.post({
+            dom.button1.addEventListener('click', function () {
+                if (state) $.ajax.post({
                     url: path.api('/admin/logout'),
                     success: function (data) {
                         if (!(state = !JSON.parse(data).status)) {
@@ -551,7 +553,12 @@ var login = (function () {
                     error: function () {
                         new Notify('网络错误').show();
                     }
-                })
+                });
+                else userAuthor.show(hide())
+            });
+            dom.button2.addEventListener('click', function () {
+                hide();
+                handle(path.url('/admin/user/manage'), location.origin + path.url('/admin/user/manage'))
             });
             dom.shadow.addEventListener('click', hide);
             $('body').append(
@@ -584,7 +591,7 @@ var header = (function () {
                 if (!input.value.length) return new Notify('请输入搜索的内容').show();
                 handle('/search/' + input.value);
                 dom.css({top: '-4rem'});
-            })
+            });
             icon.addEventListener('click', function () {
                 if (!input.value.length) return new Notify('请输入搜索的内容').show();
                 handle('/search/' + input.value);
@@ -994,11 +1001,12 @@ var main = (function () {
             header.changeBackground('/static/u0.jpg');
             header.resetMain(config['siteName']);
             if (dataType['class'] === 'all') header.resetSub(
-                1 < dataType['page'] ? '第 ' + dataType['page'] + ' 页' : config['siteDescription']
+                document.title = 1 < dataType['page'] ? '第 ' + dataType['page'] + ' 页' : config['siteDescription']
             );
             else header.resetSub(
-                (dataType['class'] === 'tag' ? '标签' : (dataType['class'] === 'category' ? '分类' : '搜索')) + ' - ' +
-                dataType['className'] + (1 < dataType['page'] ? ' - ' + '第 ' + dataType['page'] + ' 页' : '')
+                document.title =
+                    (dataType['class'] === 'tag' ? '标签' : (dataType['class'] === 'category' ? '分类' : '搜索')) + ' - ' +
+                    dataType['className'] + (1 < dataType['page'] ? ' - ' + '第 ' + dataType['page'] + ' 页' : '')
             );
             var dom = $('#main-block').empty();
             if (!data.length) return dom.append(
@@ -1024,7 +1032,7 @@ var main = (function () {
             $('body').className = 'vertical';
             if (data['image']) header.changeBackground(data['image']);
             else header.changeBackground(randomRGB());
-            header.resetMain(data['title'].length ? data['title'] : '无题');
+            header.resetMain(document.title = data['title'].length ? data['title'] : '无题');
             header.resetSub(new Date(data['time'] * 1000).toReadableFullString() + ' - ' + data['category']);
             var dom = $('#main-block').empty();
             var text = $.createElement('section', {class: 'markdown'});
@@ -1079,11 +1087,14 @@ var main = (function () {
             $('body').className = 'hide-aside broad-main vertical';
             if (data && data['image']) header.changeBackground(data['image']);
             else header.changeBackground('#223333');
-            if (data) header.resetMain('编辑文章' + (data['title'] ? ' - ' + data['title'] : ''));
-            else header.resetMain('添加新文章');
+            if (data) header.resetMain(document.title = '编辑文章' + (data['title'] ? ' - ' + data['title'] : ''));
+            else header.resetMain(document.title = '添加新文章');
             header.resetSub('');
             var dom = $('#main-block').empty();
-            if (!login.getState()) return login.show();
+            if (!login.getState()) {
+                dom.append($.createElement('h3', '抱歉, 您还没有登录'));
+                return login.show();
+            }
 
             if (mde) {
                 new Notify('加载编辑器...').show();
@@ -1187,9 +1198,12 @@ var main = (function () {
             var dom = $('#main-block').empty();
             header.changeBackground('#223333');
             $('body').className = 'vertical';
-            header.resetMain('设置');
+            header.resetMain(document.title = '设置');
             header.resetSub('');
-            if (!login.getState()) return login.show();
+            if (!login.getState()) {
+                dom.append($.createElement('h3', '抱歉, 您还没有登录'));
+                return login.show();
+            }
 
             var siteName, siteDescription, pageSize, button, site, card, tags, categories, i;
             card = $.createElement('section', {
@@ -1421,19 +1435,23 @@ var main = (function () {
                 var dom = $('#main-block').empty();
                 header.changeBackground('#223333');
                 $('body').className = 'vertical hide-aside';
-                header.resetMain('toDoList');
+                header.resetMain(document.title = 'toDoList');
                 header.resetSub('');
-                if (!login.getState()) return login.show();
+                if (!login.getState()) {
+                    dom.append($.createElement('h3', '抱歉, 您还没有登录'));
+                    return login.show();
+                }
                 write(dom, data);
             };
         })(),
         writeMessage: (function () {
             var write = function (dom, data, dataType, length) {
+                var i;
                 dom.empty();
                 if (!data.length) return dom.append(
                     $.createElement('h3', '还没有内容')
                 );
-                for (var i = 0; i < data.length; i++) {
+                if (login.getState()) for (i = 0; i < data.length; i++) {
                     var a, bookmark;
                     dom.append(
                         a = $.createElement('a', {
@@ -1484,6 +1502,23 @@ var main = (function () {
                         }
                     })(i))
                 }
+                else for (i = 0; i < data.length; i++) {
+                    dom.append(
+                        $.createElement('a', {
+                            target: '_blank',
+                            href: data[i]['url'],
+                            class: 'card message'
+                        }).append(
+                            $.createElement('section', {class: 'markdown'}).append(
+                                $.createElement('h3', data[i]['title'])
+                            ).append(
+                                $.createElement('hr')
+                            ).append(
+                                $.createElement('time', new Date(data[i]['time'] * 1000).toReadableDateString())
+                            )
+                        )
+                    )
+                }
 
                 var nav = $.createElement('section', {id: 'nav'});
                 var select = $.createElement('select');
@@ -1510,9 +1545,12 @@ var main = (function () {
                 var dom = $('#main-block').empty();
                 header.changeBackground('#223333');
                 $('body').className = 'vertical hide-aside';
-                header.resetMain('Message');
+                header.resetMain(document.title = 'Message');
                 header.resetSub('第 ' + dataType['page'] + ' 页');
-                if (!login.getState()) return login.show();
+                if (!data) {
+                    dom.append($.createElement('h3', '抱歉, 您需要登录或认证'));
+                    return login.show();
+                }
                 write(dom, data, dataType, length)
             };
         })()
@@ -1574,6 +1612,68 @@ var footer = (function () {
                     $.createElement('a', text, {href: path.url('/')})
                 )
             );
+        }
+    }
+})();
+
+var userAuthor = (function () {
+    return {
+        show: function () {
+            var dom = {};
+            dom.userAuthor = $.createElement('section', {id: 'user-author'}).append(
+                $.createElement('section', {class: 'card'}).append(
+                    $.createElement('section', {class: 'editor'}).append(
+                        dom.name = $.createElement('input', {placeholder: '姓名', maxLength: 20})
+                    ).append(
+                        dom.school = $.createElement('input', {placeholder: '学校', maxLength: 20})
+                    ).append(
+                        dom.number = $.createElement('input', {placeholder: '学号', maxLength: 20})
+                    ).append(
+                        dom.other = $.createElement('textarea', {placeholder: '备注(选填)'})
+                    ).append(
+                        dom.button = $.createElement('button', '认证')
+                    )
+                )
+            );
+            var hide = function () {
+                dom.userAuthor.css({top: '150%'});
+                dom.shadow.css({opacity: 0});
+                window.setTimeout(function () {
+                    $('body').remove(dom.userAuthor).remove(dom.shadow);
+                }, 500)
+            };
+            dom.shadow = $.createElement('section', {class: 'shadow'});
+            dom.button.addEventListener('click', function () {
+                if (dom.name.value === '') return new Notify('请提供姓名').show();
+                if (dom.school.value === '') return new Notify('请提供学校').show();
+                if (dom.number.value === '') return new Notify('请提供学号').show();
+                $.ajax.post({
+                    url: path.api('/user/author'),
+                    data: {
+                        name: dom.name.value,
+                        school: dom.school.value,
+                        number: dom.number.value,
+                        other: dom.other.value
+                    },
+                    success: function (data) {
+                        if (JSON.parse(data).status) {
+                            new Notify('认证成功').show();
+                            localStorage.setItem('login', '1');
+                            hide();
+                            load();
+                        } else new Notify('请等待认证').show();
+                    },
+                    error: function () {
+                        new Notify('网络错误').show();
+                    }
+                })
+            });
+            dom.shadow.addEventListener('click', hide);
+            $('body').append(
+                dom.userAuthor.delay(30).css({top: '50%'})
+            ).append(
+                dom.shadow.delay(30).css({opacity: 1})
+            )
         }
     }
 })();
@@ -1836,17 +1936,12 @@ var load = (function () {
                 url: path.api('/json/message/' + ((dataType['page'] - 1) * 20) + '.' + 20 + '.json'),
                 success: function (data) {
                     data = JSON.parse(data);
-                    if (!data.status && 1 < dataType['page']) {
+                    $.scroll(0, window.pageYOffset ? 1000 : 0);
+                    setTimeout(function () {
                         locker.off();
-                        new Notify('没有更多文章了').show();
-                    } else {
-                        $.scroll(0, window.pageYOffset ? 1000 : 0);
-                        setTimeout(function () {
-                            locker.off();
-                            if (pathname) history.pushState(dataType, '', path.url(pathname));
-                            main.writeMessage(data.status ? data['data'] : [], dataType, data['length']);
-                        }, window.pageYOffset ? 1000 : 0);
-                    }
+                        if (pathname) history.pushState(dataType, '', path.url(pathname));
+                        main.writeMessage(data.status ? data['data'] : false, dataType, data['length']);
+                    }, window.pageYOffset ? 1000 : 0);
                 },
                 error: function () {
                     locker.off();
@@ -1873,11 +1968,6 @@ var load = (function () {
             })
         }
         else if (dataType['type'] === 'userManage') {
-            if (pathname) history.pushState(dataType, '', path.url(pathname));
-            header.resetMain('用户管理');
-            header.resetSub('正在开发');
-            $('#main-block').empty();
-            locker.off();
         }
     };
 
