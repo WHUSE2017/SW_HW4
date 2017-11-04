@@ -123,6 +123,8 @@ def preview():
 @app.route('/toDoList/page/<int:page_num>')
 # 设置页
 @app.route('/admin/config')
+@app.route('/admin/user/manage')
+@app.route('/admin/user/manage/page/<int:page_num>')
 def index(*args, **kwargs):
     html = ''
     with open('static/all.html') as f:
@@ -504,6 +506,47 @@ def api_user_author():
          request.form.get('number'), request.form.get('other'))
     )
     return boolean_response(False)
+
+
+@app.route('/admin/user/manage/<int:start_num>.<int:limit_num>.json')
+def api_user_manage(*args, **kwargs):
+    if not session.get('login'):
+        return boolean_response(False)
+    result = {'status': False}
+    users = get_cursor().execute(
+        'SELECT * FROM user ORDER BY time DESC LIMIT ?, ?',
+        (kwargs['start_num'], kwargs['limit_num'])
+    ).fetchall()
+    if users:
+        result['status'] = True
+        data = []
+        for user in users:
+            data.append({
+                'id': user['id'],
+                'author': user['author'],
+                'name': user['name'],
+                'school': user['school'],
+                'number': user['number'],
+                'other': user['other']
+            })
+        result['data'] = data
+    return dumps(result, ensure_ascii=False) + '\n'
+
+
+@app.route('/admin/user/manage/delete', methods=['POST'])
+def api_user_manage_delete(*args, **kwargs):
+    if not session.get('login') or not request.form.get('id'):
+        return boolean_response(False)
+    get_cursor().execute('DELETE FROM user WHERE id = ?', (request.form.get('id'),))
+    return boolean_response(True)
+
+
+@app.route('/admin/user/manage/author', methods=['POST'])
+def api_user_manage_author(*args, **kwargs):
+    if not session.get('login') or not request.form.get('id'):
+        return boolean_response(False)
+    get_cursor().execute('UPDATE user SET author=1 WHERE id=?', (request.form.get('id'),))
+    return boolean_response(True)
 
 
 def spider_thread():
